@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import MedicalConsultation from "../../assets/MedicalConsultation.jpg";
 import { login } from "../../api/authService";
 import image2 from "../../assets/image2.jpg";
+import { UserTypeEnum } from "../../enums/user-type-enum";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -16,17 +17,13 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    const userInfo = await login(email, password);
-    if(userInfo.role === "admin"){
-      navigate("/admin/home");
-    } else if(userInfo.role === "doctor"){
+    const user = await login(email, password);
+    if(user.role === UserTypeEnum.ADMIN){
+      navigate("/admin");
+    } else if(user.role === UserTypeEnum.DOCTOR){
       navigate("/doctor/home");
-    } else if(userInfo.role === "client"){
-      navigate("/client/home");
-    }
-    else {
-      console.error("Invalid role or user not found");
-      alert("Invalid credentials or user not found");
+    } else if(user.role === UserTypeEnum.CLIENT){
+      navigate("/client/home",{state:{user}});
     }
   };
 

@@ -1,6 +1,9 @@
 // src/api/authService.ts
 import { jwtDecode } from "jwt-decode";
 import api from "./axios";
+import { registerUserData } from "../models/register-user-data";
+import { UserTypeEnum } from "../enums/user-type-enum";
+import toast from "react-hot-toast";
 
 export const login = async (
   email: string,
@@ -8,30 +11,62 @@ export const login = async (
 ): Promise<{
   id: string;
   email: string;
-  role: string;
+  role: UserTypeEnum;
 }> => {
-  const response = await api.post<{ token: string }>("/login", {
-    email,
-    password,
-  });
+  try {
+    const response = await api.post<{
+      access_token: string;
+      user: {
+        id: string;
+        name: string;
+        email: string;
+        role: string;
+      };
+    }>("auth/login", {
+      email,
+      password,
+    });
 
-  if (response.status === 201) {
-    localStorage.setItem("token", response.data.token); // Save the token in local storage
-    const userInfo = jwtDecode<{ id: string; email: string; role: string }>(
-      response.data.token
-    );
-    return userInfo; // Return user info for further use
-  } else {
-    console.error("Login failed:", response.statusText);
-    alert("Login failed: " + response.statusText);
+    if (response.status !== 201) {
+      throw new Error("Login failed");
+    }
+    if (!response.data.access_token) {
+      throw new Error("No access_token received");
+    }
+
+    localStorage.setItem("token", response.data.access_token); // Store the token in local storage
+    localStorage.setItem("user", JSON.stringify(response.data.user)); // should be save in store
+
+    // api.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`; // Set the token in axios headers for future requests
+
+    const token = response.data.access_token;
+
+    const decodedToken = jwtDecode(token) as {
+      id: string;
+      email: string;
+      role: UserTypeEnum;
+    };
+
+    return { ...decodedToken };
+  } catch (error) {
+    console.error("Login error:", error);
+    toast.error("Invalid email or password. Please try again.");
     throw new Error("Login failed");
   }
 };
 
-export const register = async (userData: {
-  email: string;
-  password: string;
-}) => {
-  const response = await api.post("/register", userData);
+export const register = async (userData: registerUserData) => {
+  const { confirmPassword, ...userDataWithoutConfirm } = userData;
+  if (userData.password !== confirmPassword) {
+    toast.error("Passwords do not match.");
+    throw new Error("Passwords do not match");
+  }
+  const response = await api.post("auth/register", userDataWithoutConfirm);
   return response.data;
+};
+
+export const logout = () => {
+  window.location.href = "/login";
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
 };
