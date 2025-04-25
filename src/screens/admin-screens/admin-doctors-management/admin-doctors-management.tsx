@@ -1,180 +1,192 @@
 import {
-    Button,
-    Modal,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    TextField,
-    Box,
-    Typography,
-    Paper,
-    Rating
-} from '@mui/material';
-import React, { useState, ChangeEvent } from 'react';
-import toast from 'react-hot-toast';
-
+  Button,
+  Box,
+  Typography,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Paper,
+  TableContainer,
+  Rating,
+  IconButton,
+  Menu,
+  MenuItem,
+} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { useDialogHook } from "../../../hook/use-dialog";
+import AddDoctorDialog from "./add-doctor-dialog/add-doctor-dialog";
+import { getDoctors } from "../../../api/adminService";
+import ListIcon from "@mui/icons-material/List";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 interface Doctor {
-    id: number;
-    name: string;
-    specialization: string;
-    email: string;
-    rating: number; // Add rating field
+  _id: string;
+  name: string;
+  specialty: string;
+  email: string;
+  rate: number;
+  age: number;
+  gender: "Male" | "Female" | "Other";
+  address: string;
 }
 
 const AdminDoctorsManagement: React.FC = () => {
-    const [doctors, setDoctors] = useState<Doctor[]>([
-        { id: 1, name: 'Dr. John Doe', specialization: 'Cardiology', email: 'john.doe@example.com', rating: 4 },
-        { id: 2, name: 'Dr. Jane Smith', specialization: 'Neurology', email: 'jane.smith@example.com', rating: 5 },
-    ]);
-    const [isModalVisible, setIsModalVisible] = useState(false);
-    const [editingDoctor, setEditingDoctor] = useState<Doctor | null>(null);
-    const [formValues, setFormValues] = useState<Omit<Doctor, 'id'>>({ name: '', specialization: '', email: '', rating: 3 });
+  const { isOpen, openDialog, closeDialog } = useDialogHook();
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
 
-    const handleDelete = (id: number) => {
-        setDoctors(doctors.filter((doctor) => doctor.id !== id));
-        toast.success('Doctor deleted successfully');
-    };
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
+  const open = Boolean(anchorEl);
 
-    const handleEdit = (doctor: Doctor) => {
-        setEditingDoctor(doctor);
-        setFormValues({ name: doctor.name, specialization: doctor.specialization, email: doctor.email, rating: doctor.rating });
-        setIsModalVisible(true);
-    };
+  const handleMenuClick = (
+    event: React.MouseEvent<HTMLElement>,
+    doctor: Doctor
+  ) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedDoctor(doctor);
+  };
 
-    const handleAdd = () => {
-        setEditingDoctor(null);
-        setFormValues({ name: '', specialization: '', email: '', rating: 3 });
-        setIsModalVisible(true);
-    };
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setSelectedDoctor(null);
+  };
 
-    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormValues((prev) => ({ ...prev, [name]: value }));
-    };
+  const fetchDoctors = async () => {
+    const doctors = (await getDoctors()) as Doctor[];
+    setDoctors(doctors);
+  };
 
-    const handleRatingChange = (event: React.ChangeEvent<unknown>, newValue: number | null) => {
-        setFormValues((prev) => ({ ...prev, rating: newValue as number }));
-    };
+  useEffect(() => {
+    fetchDoctors();
+  }, []);
 
-    const handleModalSubmit = () => {
-        if (!formValues.name || !formValues.specialization || !formValues.email) {
-            toast.error('Please fill out all fields correctly');
-            return;
-        }
+  const handleAdd = () => {
+    openDialog();
+  };
 
-        if (editingDoctor) {
-            setDoctors(doctors.map((doc) =>
-                doc.id === editingDoctor.id ? { ...editingDoctor, ...formValues } : doc
-            ));
-            toast.success('Doctor updated successfully');
-        } else {
-            const newDoctor = { ...formValues, id: Date.now() };
-            setDoctors([...doctors, newDoctor]);
-            toast.success('Doctor added successfully');
-        }
-        setIsModalVisible(false);
-    };
-
-    return (
-        <Box p={4}>
-            <Typography variant="h4" gutterBottom>Admin Doctors Management</Typography>
-            <Button variant="contained" color="primary" onClick={handleAdd} sx={{ mb: 2 }}>
-                Add Doctor
-            </Button>
-            <TableContainer component={Paper}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Name</TableCell>
-                            <TableCell>Specialization</TableCell>
-                            <TableCell>Email</TableCell>
-                            <TableCell>Rating</TableCell>
-                            <TableCell>Actions</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {doctors.map((doctor) => (
-                            <TableRow key={doctor.id}>
-                                <TableCell>{doctor.name}</TableCell>
-                                <TableCell>{doctor.specialization}</TableCell>
-                                <TableCell>{doctor.email}</TableCell>
-                                <TableCell>
-                                    <Rating
-                                        value={doctor.rating}
-                                        readOnly
-                                        precision={0.5} // Allows half-star ratings
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <Button onClick={() => handleEdit(doctor)} color="primary">Edit</Button>
-                                    <Button onClick={() => handleDelete(doctor.id)} color="error">Delete</Button>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-
-            <Modal open={isModalVisible} onClose={() => setIsModalVisible(false)}>
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        width: 400,
-                        bgcolor: 'background.paper',
-                        boxShadow: 24,
-                        p: 4,
-                        borderRadius: 2,
-                    }}
-                >
-                    <Typography variant="h6" gutterBottom>
-                        {editingDoctor ? 'Edit Doctor' : 'Add Doctor'}
-                    </Typography>
-                    <Box display="flex" flexDirection="column" gap={2}>
-                        <TextField
-                            label="Name"
-                            name="name"
-                            value={formValues.name}
-                            onChange={handleInputChange}
-                            fullWidth
-                            required
-                        />
-                        <TextField
-                            label="Specialization"
-                            name="specialization"
-                            value={formValues.specialization}
-                            onChange={handleInputChange}
-                            fullWidth
-                            required
-                        />
-                        <TextField
-                            label="Email"
-                            name="email"
-                            type="email"
-                            value={formValues.email}
-                            onChange={handleInputChange}
-                            fullWidth
-                            required
-                        />
-                        <Typography>Rating</Typography>
-                        <Rating
-                            value={formValues.rating}
-                            onChange={handleRatingChange}
-                            precision={0.5} // Allows half-star ratings
-                        />
-                        <Button variant="contained" onClick={handleModalSubmit}>
-                            {editingDoctor ? 'Update' : 'Add'}
-                        </Button>
-                    </Box>
-                </Box>
-            </Modal>
-        </Box>
+  const handleDelete = (id: string) => {
+    setDoctors((prevDoctors) =>
+      prevDoctors.filter((doctor) => doctor._id !== id)
     );
+    toast.success("Doctor deleted successfully!");
+  };
+
+  const handleEdit = (doctor: Doctor) => {
+    console.log("doctor: ", doctor);
+    toast("Edit functionality not implemented yet.");
+  };
+
+  return (
+    <Box>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleAdd}
+        sx={{ mb: 2 }}
+      >
+        Add Doctor
+      </Button>
+
+      <TableContainer component={Paper} sx={{ maxHeight: 400 }}>
+        {doctors.length > 0 ? (
+          <Table stickyHeader>
+            <TableHead>
+              <TableRow>
+                <TableCell>Name</TableCell>
+                <TableCell>Specialty</TableCell>
+                <TableCell>Email</TableCell>
+                <TableCell>Rating</TableCell>
+                <TableCell>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {doctors.map((doctor) => (
+                <TableRow key={doctor._id}>
+                  <TableCell>{doctor.name}</TableCell>
+                  <TableCell>{doctor.specialty}</TableCell>
+                  <TableCell>{doctor.email}</TableCell>
+                  <TableCell>
+                    <Rating
+                      value={Number(doctor.rate) || 0}
+                      precision={0.5}
+                      readOnly
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <IconButton onClick={(e) => handleMenuClick(e, doctor)}>
+                      <ListIcon />
+                    </IconButton>
+                  </TableCell>
+                  <Menu
+                    anchorEl={anchorEl}
+                    open={open}
+                    onClose={handleMenuClose}
+                    PaperProps={{
+                      sx: {
+                        borderRadius: 5,
+                      },
+                    }}
+                  >
+                    <MenuItem
+                      sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        gap: 1,
+                      }}
+                      onClick={() => {
+                        handleEdit(selectedDoctor!);
+                        handleMenuClose();
+                      }}
+                    >
+                      <VisibilityIcon color="primary" />
+                      View
+                    </MenuItem>
+                    <MenuItem
+                      sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        gap: 1,
+                      }}
+                      onClick={() => {
+                        handleEdit(selectedDoctor!);
+                        handleMenuClose();
+                      }}
+                    >
+                      <EditIcon color="primary" />
+                      Edit
+                    </MenuItem>
+                    <MenuItem
+                      sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        gap: 1,
+                      }}
+                      onClick={() => {
+                        handleDelete(selectedDoctor!._id);
+                        handleMenuClose();
+                      }}
+                    >
+                      <DeleteIcon color="error" />
+                      Delete
+                    </MenuItem>
+                  </Menu>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        ) : (
+          <Typography variant="body1" color="textSecondary" p={2}>
+            No doctors available.
+          </Typography>
+        )}
+      </TableContainer>
+      <AddDoctorDialog isOpen={isOpen} onClose={closeDialog} />
+    </Box>
+  );
 };
 
 export default AdminDoctorsManagement;
