@@ -1,6 +1,5 @@
 import { useState } from "react";
 import {
-  Button,
   Typography,
   Box,
   Paper,
@@ -21,6 +20,7 @@ import StepThree from "./steps/step-three";
 import { registerUserData } from "../../models/register-user-data";
 import { register } from "../../api/authService";
 import toast from "react-hot-toast";
+import MyButton from "../../components/my-button";
 const steps = ["Account", "Personal", "Health", "Payment"];
 const stepImages = [account, personal, health, payment];
 
@@ -180,29 +180,29 @@ const Register = () => {
 
           {/* Step navigation */}
           <Box display="flex" justifyContent="space-between" sx={{ mt: 3 }}>
-            <Button
+            <MyButton
               variant="outlined"
               onClick={() => setActiveStep((prev) => prev - 1)}
               disabled={activeStep === 0}
             >
               Back
-            </Button>
+            </MyButton>
 
             {activeStep === steps.length - 1 ? (
-              <Button variant="contained" onClick={handleRegister}>
+              <MyButton variant="contained" onClick={handleRegister}>
                 Register
-              </Button>
+              </MyButton>
             ) : (
-              <Button
+              <MyButton
                 variant="contained"
                 onClick={() => setActiveStep((prev) => prev + 1)}
               >
                 Next
-              </Button>
+              </MyButton>
             )}
           </Box>
 
-          <Button
+          <MyButton
             fullWidth
             variant="outlined"
             sx={{
@@ -215,7 +215,7 @@ const Register = () => {
             onClick={() => navigate("/")}
           >
             Back to Login
-          </Button>
+          </MyButton>
         </Box>
       </Paper>
     </Box>

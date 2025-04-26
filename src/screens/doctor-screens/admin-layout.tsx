@@ -26,18 +26,18 @@ import { logout } from "../../api/authService";
 
 const drawerWidth = 240;
 
-const AdminLayout = () => {
+const DoctorLayout = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
   const userString = localStorage.getItem("user");
   const user = userString ? JSON.parse(userString) : null;
 
   useEffect(() => {
-    navigate("/admin/home");
+    navigate("/doctor/home");
   }, []);
 
   const handleLogout = () => {
-    logout();
+    logout()
   };
 
   const handleDrawerToggle = () => {
@@ -68,13 +68,7 @@ const AdminLayout = () => {
                 item.path ? navigate(item.path) : item.action?.()
               }
             >
-              <ListItemIcon
-                sx={{
-                  color: "#7b1fa2",
-                }}
-              >
-                {item.icon}
-              </ListItemIcon>
+              <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.text} />
             </ListItemButton>
           </ListItem>
@@ -84,14 +78,11 @@ const AdminLayout = () => {
   );
 
   return (
-    <Box sx={{ flex: 1, display: "flex" }}>
+    <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar
         position="fixed"
-        sx={{
-          zIndex: (theme) => theme.zIndex.drawer + 1,
-          background: "linear-gradient(to left, #7b1fa2, #512da8)",
-        }}
+        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
       >
         <Toolbar>
           <IconButton
@@ -113,7 +104,7 @@ const AdminLayout = () => {
           >
             <Avatar>{user?.name?.charAt(0).toUpperCase()}</Avatar>
             <Typography variant="h6" noWrap component="div">
-              {user.name.toUpperCase()}
+              Admin Dashboard
             </Typography>
           </Box>
         </Toolbar>
@@ -160,7 +151,6 @@ const AdminLayout = () => {
           flexGrow: 1,
           p: 3,
           width: { md: `calc(100% - ${drawerWidth}px)` },
-          m: 0,
           mt: 8,
         }}
       >
@@ -171,4 +161,4 @@ const AdminLayout = () => {
   );
 };
 
-export default AdminLayout;
+export default DoctorLayout;

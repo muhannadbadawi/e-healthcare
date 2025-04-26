@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TextField, Button, Typography, Box, Paper } from "@mui/material";
+import { TextField, Typography, Box, Paper } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import IconButton from "@mui/material/IconButton";
@@ -9,6 +9,7 @@ import MedicalConsultation from "../../assets/MedicalConsultation.jpg";
 import { login } from "../../api/authService";
 import image2 from "../../assets/image2.jpg";
 import { UserTypeEnum } from "../../enums/user-type-enum";
+import MyButton from "../../components/my-button";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -18,17 +19,16 @@ const Login = () => {
 
   const handleLogin = async () => {
     const user = await login(email, password);
-    if(user.role === UserTypeEnum.ADMIN){
+    if (user.role === UserTypeEnum.ADMIN) {
       navigate("/admin");
     } else if(user.role === UserTypeEnum.DOCTOR){
-      navigate("/doctor/home");
+      navigate("/doctor");
     } else if(user.role === UserTypeEnum.CLIENT){
       navigate("/client/home",{state:{user}});
     }
   };
 
   const handleRegister = () => {
-    console.log("Navigate to registration page");
     navigate("/register");
   };
 
@@ -97,21 +97,25 @@ const Login = () => {
             type={showPassword ? "text" : "password"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleLogin();
+              }
+            }}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
                   <IconButton onClick={() => setShowPassword(!showPassword)}>
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                    {showPassword ? <Visibility /> : <VisibilityOff />}
                   </IconButton>
                 </InputAdornment>
               ),
             }}
           />
 
-          <Button
+          <MyButton
             fullWidth
             variant="contained"
-            color="primary"
             sx={{
               mt: 3,
               py: 1.5,
@@ -122,9 +126,9 @@ const Login = () => {
             onClick={handleLogin}
           >
             Login
-          </Button>
+          </MyButton>
 
-          <Button
+          <MyButton
             fullWidth
             variant="outlined"
             sx={{
@@ -137,7 +141,7 @@ const Login = () => {
             onClick={handleRegister}
           >
             Register
-          </Button>
+          </MyButton>
         </Box>
         {/* Right Login Form */}
         <Box

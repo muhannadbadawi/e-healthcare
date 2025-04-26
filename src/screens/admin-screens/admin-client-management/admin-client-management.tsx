@@ -8,7 +8,6 @@ import {
   TableBody,
   Paper,
   TableContainer,
-  Rating,
   IconButton,
   Menu,
   MenuItem,
@@ -16,41 +15,41 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDialogHook } from "../../../hook/use-dialog";
-import AddDoctorDialog from "./add-doctor-dialog/add-doctor-dialog";
-import { deleteDoctor, getDoctors } from "../../../api/adminService";
+import AddDoctorDialog from "./add-client-dialog/add-client-dialog";
+import { deleteDoctor, getClients } from "../../../api/adminService";
 import ListIcon from "@mui/icons-material/List";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import EditIcon from "@mui/icons-material/Edit";
+import LockResetIcon from "@mui/icons-material/LockReset";
 import DeleteIcon from "@mui/icons-material/Delete";
-import MyButton from "../../../components/my-button";
 import ConfirmDialog from "../../../components/confirm-dialog";
 
-export interface Doctor {
+export interface Client {
   _id: string;
   name: string;
-  specialty: string;
   email: string;
-  rate: number;
   age: number;
   gender: "Male" | "Female";
   address: string;
+  height: string;
+  weight: string;
+  allergies: string;
 }
 
-const AdminDoctorsManagement: React.FC = () => {
+const AdminClientManagement: React.FC = () => {
   const { isOpen, openDialog, closeDialog } = useDialogHook();
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [doctors, setDoctors] = useState<Client[]>([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
-  const [editingDoctor, setEditingDoctor] = useState<Doctor | null>(null);
+  const [selectedDoctor, setSelectedDoctor] = useState<Client | null>(null);
+  const [editingDoctor, setEditingDoctor] = useState<Client | null>(null);
   const [loading, setLoading] = useState(true);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-  const [doctorToDelete, setDoctorToDelete] = useState<Doctor | null>(null);
+  const [doctorToDelete, setDoctorToDelete] = useState<Client | null>(null);
 
   const open = Boolean(anchorEl);
 
   const handleMenuClick = (
     event: React.MouseEvent<HTMLElement>,
-    doctor: Doctor
+    doctor: Client
   ) => {
     setAnchorEl(event.currentTarget);
     setSelectedDoctor(doctor);
@@ -63,7 +62,7 @@ const AdminDoctorsManagement: React.FC = () => {
 
   const fetchDoctors = async () => {
     setLoading(true);
-    const doctors = (await getDoctors()) as Doctor[];
+    const doctors = (await getClients()) as Client[];
     setDoctors(doctors);
     setLoading(false);
   };
@@ -72,23 +71,19 @@ const AdminDoctorsManagement: React.FC = () => {
     fetchDoctors();
   }, []);
 
-  const handleAdd = () => {
-    openDialog();
+  const handleDelete = (doctor: Client) => {
+    setDoctorToDelete(doctor); // Set the doctor to delete
+    setOpenConfirmDialog(true); // Open the confirmation dialog
   };
 
-  const handleEdit = (doctor: Doctor) => {
-    setEditingDoctor(doctor);
-    openDialog();
-  };
-
-  const handleDelete = (doctor: Doctor) => {
+  const resetPassword = (doctor: Client) => {
     setDoctorToDelete(doctor); // Set the doctor to delete
     setOpenConfirmDialog(true); // Open the confirmation dialog
   };
 
   const handleConfirmDelete = async () => {
     if (doctorToDelete) {
-      await deleteDoctor(doctorToDelete._id)
+      await deleteDoctor(doctorToDelete._id);
       fetchDoctors();
     }
     setOpenConfirmDialog(false); // Close the dialog after confirming
@@ -109,14 +104,8 @@ const AdminDoctorsManagement: React.FC = () => {
   return (
     <Box sx={{ flex: 1, padding: 4 }}>
       <Typography variant="h5" fontWeight={600} mb={3}>
-        Doctors Management
+        Clients Management
       </Typography>
-
-      <Box display="flex" justifyContent="flex-start" mb={2}>
-        <MyButton variant="contained" onClick={handleAdd} sx={{ px: 3 }}>
-          Add Doctor
-        </MyButton>
-      </Box>
 
       <TableContainer
         component={Paper}
@@ -175,16 +164,16 @@ const AdminDoctorsManagement: React.FC = () => {
                   <strong>Name</strong>
                 </TableCell>
                 <TableCell>
-                  <strong>Specialty</strong>
-                </TableCell>
-                <TableCell>
                   <strong>Email</strong>
                 </TableCell>
                 <TableCell>
-                  <strong>Rating</strong>
+                  <strong>Age</strong>
                 </TableCell>
-                <TableCell align="center">
-                  <strong>Actions</strong>
+                <TableCell>
+                  <strong>Gender</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Location</strong>
                 </TableCell>
               </TableRow>
             </TableHead>
@@ -192,15 +181,11 @@ const AdminDoctorsManagement: React.FC = () => {
               {doctors.map((doctor) => (
                 <TableRow key={doctor._id} hover>
                   <TableCell>{doctor.name}</TableCell>
-                  <TableCell>{doctor.specialty}</TableCell>
                   <TableCell>{doctor.email}</TableCell>
-                  <TableCell>
-                    <Rating
-                      value={Number(doctor.rate) || 0}
-                      precision={0.5}
-                      readOnly
-                    />
-                  </TableCell>
+                  <TableCell>{doctor.age}</TableCell>
+                  <TableCell>{doctor.gender}</TableCell>
+                  <TableCell>{doctor.address}</TableCell>
+
                   <TableCell align="center">
                     <IconButton
                       onClick={(e) => handleMenuClick(e, doctor)}
@@ -224,7 +209,6 @@ const AdminDoctorsManagement: React.FC = () => {
                   >
                     <MenuItem
                       onClick={() => {
-                        handleEdit(selectedDoctor!);
                         handleMenuClose();
                       }}
                     >
@@ -233,12 +217,12 @@ const AdminDoctorsManagement: React.FC = () => {
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
-                        handleEdit(selectedDoctor!);
+                        resetPassword(selectedDoctor!);
                         handleMenuClose();
                       }}
                     >
-                      <EditIcon sx={{ mr: 1 }} color="primary" />
-                      Edit
+                      <LockResetIcon sx={{ mr: 1 }} color="primary" />
+                      Reset Password
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
@@ -256,21 +240,17 @@ const AdminDoctorsManagement: React.FC = () => {
           </Table>
         ) : (
           <Typography variant="body1" color="textSecondary" p={2}>
-            No doctors available.
+            No clients available.
           </Typography>
         )}
       </TableContainer>
 
-      <AddDoctorDialog
-        isOpen={isOpen}
-        onClose={onCloseDialog}
-        editingDoctor={editingDoctor}
-      />
+
       <ConfirmDialog
         open={openConfirmDialog}
         onClose={handleCancelDelete}
         onConfirm={handleConfirmDelete}
-        title="Delete Doctor"
+        title="Delete Client"
         message="Are you sure you want to delete this doctor?"
         confirmText="Confirm Delete"
         confirmButtonColor="error"
@@ -279,4 +259,4 @@ const AdminDoctorsManagement: React.FC = () => {
   );
 };
 
-export default AdminDoctorsManagement;
+export default AdminClientManagement;

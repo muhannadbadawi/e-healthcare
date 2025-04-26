@@ -22,7 +22,7 @@ import { addDoctor, updateDoctor } from "../../../../api/adminService";
 import { registerDoctorData } from "../../../../models/register-doctor-data";
 import toast from "react-hot-toast";
 import MyButton from "../../../../components/my-button";
-import { Doctor } from "../admin-doctors-management";
+import { Doctor } from "../admin-client-management";
 import { useEffect } from "react";
 
 interface IAddDoctorDialogProps {

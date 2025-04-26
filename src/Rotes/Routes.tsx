@@ -3,11 +3,13 @@ import Login from "../screens/login-screen/Login";
 import Register from "../screens/register-screen/Register";
 import ProtectedRoute from "./ProtectedRoute";
 import AdminLayout from "../screens/admin-screens/admin-layout";
-import DoctorHome from "../screens/doctor-screens/home";
+import DoctorHome from "../screens/doctor-screens/doctor-home/doctor-home";
 import ClientHome from "../screens/client-screens/home";
 import { UserTypeEnum } from "../enums/user-type-enum";
 import AdminDashboard from "../screens/admin-screens/admin-dashboard/admin-dashboard";
 import AdminDoctorsManagement from "../screens/admin-screens/admin-doctors-management/admin-doctors-management";
+import AdminClientManagement from "../screens/admin-screens/admin-client-management/admin-client-management";
+import DoctorLayout from "../screens/doctor-screens/admin-layout";
 
 export const router = createBrowserRouter([
   {
@@ -44,22 +46,36 @@ export const router = createBrowserRouter([
       },
       {
         path: "clients",
-        element: <AdminLayout />, // This could be a specific page for managing clients
+        element: <AdminClientManagement />, // This could be a specific page for managing clients
       },
     ],
   },
   {
-    path: "/doctor/home",
+    path: "/doctor",
     element: (
       <ProtectedRoute role={UserTypeEnum.DOCTOR}>
-        <DoctorHome />
+        <DoctorLayout />
       </ProtectedRoute>
     ),
+    children: [
+      {
+        path: "home",
+        element: <DoctorHome />, // Default to dashboard
+      },
+    ],
   },
+  // {
+  //   path: "/doctor",
+  //   element: (
+  //     <ProtectedRoute role={UserTypeEnum.DOCTOR}>
+  //       {/* <DoctorLayout /> */}
+  //     </ProtectedRoute>
+  //   ),
+  // },
   {
     path: "/client/home",
     element: (
-      <ProtectedRoute role={UserTypeEnum.CLIENT} >
+      <ProtectedRoute role={UserTypeEnum.CLIENT}>
         <ClientHome />
       </ProtectedRoute>
     ),

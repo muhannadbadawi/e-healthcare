@@ -2,55 +2,44 @@ import { registerDoctorData } from "../models/register-doctor-data";
 import api from "./axios";
 
 export const getCounts = async () => {
-  const token = localStorage.getItem("token");
-
-  if (!token) {
-    throw new Error("Passwords do not match");
-  }
-  const response = await api.post(
-    "/admin/getCounts",
-    {},
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-
+  const response = await api.post("/admin/getCounts", {});
   return response.data;
 };
 
 export const addDoctor = async (newDoctor: registerDoctorData) => {
-  const token = localStorage.getItem("token");
+  const response = await api.post("/admin/addDoctor", newDoctor);
+  return response.status === 201;
+};
 
-  if (!token) {
-    throw new Error("Passwords do not match");
+export const updateDoctor = async (
+  id: string,
+  data: Partial<registerDoctorData>
+) => {
+  try {
+    const response = await api.put(`/admin/editDoctor/${id}`, data);
+    return response.status === 200;
+  } catch (error) {
+    console.error(error);
+    return false;
   }
-  const response = await api.post("/admin/addDoctor", newDoctor, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+};
 
-  return response.status === 201 ;
+export const deleteDoctor = async (id: string) => {
+  try {
+    const response = await api.delete(`/admin/deleteDoctor/${id}`);
+    return response.status === 200;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
 };
 
 export const getDoctors = async () => {
-  const token = localStorage.getItem("token");
+  const response = await api.post("/admin/getDoctors", {});
+  return response.data;
+};
 
-  if (!token) {
-    throw new Error("Passwords do not match");
-  }
-  const response = await api.post(
-    "/admin/getDoctors",
-    {},
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-  console.log("response.data: ", response.data);
-
+export const getClients = async () => {
+  const response = await api.post("/admin/getClients", {});
   return response.data;
 };

@@ -8,9 +8,9 @@ import {
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import PeopleIcon from "@mui/icons-material/People";
-import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
-import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
-import PersonIcon from '@mui/icons-material/Person';
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
+import PersonIcon from "@mui/icons-material/Person";
 import { getCounts } from "../../../api/adminService";
 
 const AdminDashboard = () => {
@@ -49,49 +49,61 @@ const AdminDashboard = () => {
 
       <Grid container spacing={12} sx={{ px: 2 }}>
         {/* Total Users */}
-        <Card>
+        <Card sx={{ width: 170 }}>
           <CardHeader
             title="Total Users"
             avatar={<PeopleIcon />}
-            sx={{ backgroundColor: "#f5f5f5" }}
+            sx={{
+              background: "linear-gradient(to left, #7b1fa2, #512da8)",
+              color: "#fff",
+            }}
           />
-          <CardContent>
-            <Typography variant="h5">{dashboardData.totalUsers}</Typography>
+          <CardContent sx={{ display: "flex", justifyContent: "center" }}>
+            <Typography>{dashboardData.totalUsers} Users</Typography>
           </CardContent>
         </Card>
         {/* Active Admins */}
-        <Card>
+        <Card sx={{ width: 170 }}>
           <CardHeader
             title="Active Admins"
             avatar={<AdminPanelSettingsIcon />}
-            sx={{ backgroundColor: "#f5f5f5" }}
+            sx={{
+              background: "linear-gradient(to left, #7b1fa2, #512da8)",
+              color: "#fff",
+            }}
           />
-          <CardContent>
-            <Typography variant="h5">{dashboardData.activeAdmin}</Typography>
+          <CardContent sx={{ display: "flex", justifyContent: "center" }}>
+            <Typography>{dashboardData.activeAdmin} Admins</Typography>
           </CardContent>
         </Card>
 
         {/* Active Doctors */}
-        <Card>
+        <Card sx={{ width: 170 }}>
           <CardHeader
             title="Active Doctors"
             avatar={<LocalHospitalIcon />}
-            sx={{ backgroundColor: "#f5f5f5" }}
+            sx={{
+              background: "linear-gradient(to left, #7b1fa2, #512da8)",
+              color: "#fff",
+            }}
           />
-          <CardContent>
-            <Typography variant="h5">{dashboardData.activeDoctors}</Typography>
+          <CardContent sx={{ display: "flex", justifyContent: "center" }}>
+            <Typography>{dashboardData.activeDoctors} Doctors</Typography>
           </CardContent>
         </Card>
 
         {/* Active Clients */}
-        <Card>
+        <Card sx={{ width: 170 }}>
           <CardHeader
             title="Active Clients"
             avatar={<PersonIcon />}
-            sx={{ backgroundColor: "#f5f5f5" }}
+            sx={{
+              background: "linear-gradient(to left, #7b1fa2, #512da8)",
+              color: "#fff",
+            }}
           />
-          <CardContent>
-            <Typography variant="h5">{dashboardData.activeClients}</Typography>
+          <CardContent sx={{ display: "flex", justifyContent: "center" }}>
+            <Typography>{dashboardData.activeClients} Clients</Typography>
           </CardContent>
         </Card>
       </Grid>
