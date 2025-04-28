@@ -52,3 +52,88 @@ export default tseslint.config({
   },
 })
 ```
+e-healthcare
+├─ eslint.config.js
+├─ index.html
+├─ package-lock.json
+├─ package.json
+├─ public
+│  └─ vite.svg
+├─ README.md
+├─ src
+│  ├─ api
+│  │  ├─ adminService.ts
+│  │  ├─ authService.ts
+│  │  ├─ axios.ts
+│  │  ├─ clientService.ts
+│  │  └─ userService.ts
+│  ├─ App.css
+│  ├─ App.tsx
+│  ├─ assets
+│  │  ├─ account.jpg
+│  │  ├─ health.png
+│  │  ├─ image2.jpg
+│  │  ├─ MedicalConsultation.jpg
+│  │  ├─ payment.jpg
+│  │  ├─ personal.png
+│  │  └─ react.svg
+│  ├─ components
+│  │  ├─ confirm-dialog.tsx
+│  │  ├─ layout.tsx
+│  │  └─ my-button.tsx
+│  ├─ enums
+│  │  ├─ medical-specialty-enum.ts
+│  │  └─ user-type-enum.ts
+│  ├─ hooks
+│  │  ├─ use-dialog.ts
+│  │  └─ use-socket.ts
+│  ├─ index.css
+│  ├─ main.tsx
+│  ├─ models
+│  │  ├─ doctor.ts
+│  │  ├─ register-client-data.ts
+│  │  └─ register-doctor-data.ts
+│  ├─ Rotes
+│  │  ├─ ProtectedRoute.tsx
+│  │  └─ Routes.tsx
+│  ├─ screens
+│  │  ├─ admin-screens
+│  │  │  ├─ admin-client-management
+│  │  │  │  └─ admin-client-management.tsx
+│  │  │  ├─ admin-dashboard
+│  │  │  │  └─ admin-dashboard.tsx
+│  │  │  ├─ admin-doctors-management
+│  │  │  │  ├─ add-doctor-dialog
+│  │  │  │  │  └─ add-doctor-dialog.tsx
+│  │  │  │  └─ admin-doctors-management.tsx
+│  │  │  ├─ admin-layout.tsx
+│  │  │  └─ admin-settings
+│  │  │     └─ admin-settings.tsx
+│  │  ├─ client-screens
+│  │  │  ├─ client-home
+│  │  │  │  └─ client-home.tsx
+│  │  │  ├─ client-layout.tsx
+│  │  │  └─ medical-specialties
+│  │  │     ├─ doctor-list
+│  │  │     │  └─ doctor-list.tsx
+│  │  │     └─ medical-specialties.tsx
+│  │  ├─ doctor-screens
+│  │  │  ├─ doctor-home
+│  │  │  │  └─ doctor-home.tsx
+│  │  │  └─ doctor-layout.tsx
+│  │  ├─ login-screen
+│  │  │  └─ Login.tsx
+│  │  └─ register-screen
+│  │     ├─ Register.tsx
+│  │     └─ steps
+│  │        ├─ step-one.tsx
+│  │        ├─ step-three.tsx
+│  │        ├─ step-two.tsx
+│  │        └─ step-zero.tsx
+│  └─ vite-env.d.ts
+├─ tsconfig.app.json
+├─ tsconfig.json
+├─ tsconfig.node.json
+└─ vite.config.ts
+
+```

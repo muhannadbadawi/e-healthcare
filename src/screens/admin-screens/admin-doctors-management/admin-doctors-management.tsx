@@ -15,7 +15,7 @@ import {
   Skeleton,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { useDialogHook } from "../../../hook/use-dialog";
+import { useDialogHook } from "../../../hooks/use-dialog";
 import AddDoctorDialog from "./add-doctor-dialog/add-doctor-dialog";
 import { deleteDoctor, getDoctors } from "../../../api/adminService";
 import ListIcon from "@mui/icons-material/List";
