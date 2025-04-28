@@ -17,7 +17,7 @@ import StepZero from "./steps/step-zero";
 import StepOne from "./steps/step-one";
 import StepTwo from "./steps/step-two";
 import StepThree from "./steps/step-three";
-import { registerUserData } from "../../models/register-user-data";
+import { registerClientData } from "../../models/register-client-data";
 import { register } from "../../api/authService";
 import toast from "react-hot-toast";
 import MyButton from "../../components/my-button";
@@ -26,7 +26,7 @@ const stepImages = [account, personal, health, payment];
 
 const Register = () => {
   const [activeStep, setActiveStep] = useState(0);
-  const [formData, setFormData] = useState<registerUserData>({
+  const [formData, setFormData] = useState<registerClientData>({
     name: "",
     email: "",
     password: "",

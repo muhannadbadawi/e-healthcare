@@ -3,7 +3,6 @@ import {
   Avatar,
   Box,
   CssBaseline,
-  Divider,
   Drawer,
   IconButton,
   List,
@@ -15,51 +14,44 @@ import {
   Typography,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import PeopleIcon from "@mui/icons-material/People";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
-import SettingsIcon from "@mui/icons-material/Settings";
-import LogoutIcon from "@mui/icons-material/Logout";
-import { useEffect, useState } from "react";
+import { JSX, useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import { logout } from "../../api/authService";
 
-const drawerWidth = 240;
+interface ILayoutProps {
+  navItems: (
+    | {
+        text: string;
+        path: string;
+        icon: JSX.Element;
+        action?: undefined;
+      }
+    | {
+        text: string;
+        action: () => void;
+        icon: JSX.Element;
+        path?: undefined;
+      }
+  )[];
+  defaultRout: string;
+}
 
-const DoctorLayout = () => {
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const navigate = useNavigate();
+const Layout = ({ navItems, defaultRout }: ILayoutProps) => {
   const userString = localStorage.getItem("user");
   const user = userString ? JSON.parse(userString) : null;
 
-  useEffect(() => {
-    navigate("/doctor/home");
-  }, []);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout()
-  };
+  useEffect(() => {
+    navigate(defaultRout);
+  }, []);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
-  const navItems = [
-    { text: "Dashboard", path: "/admin/home", icon: <DashboardIcon /> },
-    { text: "Clients", path: "/admin/clients", icon: <PeopleIcon /> },
-    { text: "Doctors", path: "/admin/doctors", icon: <LocalHospitalIcon /> },
-    { text: "Settings", path: "/admin/settings", icon: <SettingsIcon /> },
-    { text: "Logout", action: handleLogout, icon: <LogoutIcon /> },
-  ];
-
   const drawer = (
-    <div>
-      <Toolbar>
-        <Typography variant="h6" noWrap>
-          Admin Panel
-        </Typography>
-      </Toolbar>
-      <Divider />
+    <div style={{ marginTop: 60 }}>
       <List>
         {navItems.map((item, index) => (
           <ListItem key={index} disablePadding>
@@ -68,7 +60,13 @@ const DoctorLayout = () => {
                 item.path ? navigate(item.path) : item.action?.()
               }
             >
-              <ListItemIcon>{item.icon}</ListItemIcon>
+              <ListItemIcon
+                sx={{
+                  color: "#7b1fa2",
+                }}
+              >
+                {item.icon}
+              </ListItemIcon>
               <ListItemText primary={item.text} />
             </ListItemButton>
           </ListItem>
@@ -78,11 +76,14 @@ const DoctorLayout = () => {
   );
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", flex: 1 }}>
       <CssBaseline />
       <AppBar
         position="fixed"
-        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        sx={{
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          background: "linear-gradient(to left, #7b1fa2, #512da8)",
+        }}
       >
         <Toolbar>
           <IconButton
@@ -104,16 +105,12 @@ const DoctorLayout = () => {
           >
             <Avatar>{user?.name?.charAt(0).toUpperCase()}</Avatar>
             <Typography variant="h6" noWrap component="div">
-              Admin Dashboard
+              {user.name.toUpperCase()}
             </Typography>
           </Box>
         </Toolbar>
       </AppBar>
-
-      <Box
-        component="nav"
-        sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
-      >
+      <Box component="nav" sx={{ width: { md: 240 }, flexShrink: { md: 0 } }}>
         <Drawer
           variant="temporary"
           open={mobileOpen}
@@ -123,7 +120,7 @@ const DoctorLayout = () => {
             display: { xs: "block", md: "none" },
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
-              width: drawerWidth,
+              width: 240,
             },
           }}
         >
@@ -136,7 +133,7 @@ const DoctorLayout = () => {
             display: { xs: "none", md: "block" },
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
-              width: drawerWidth,
+              width: 240,
             },
           }}
           open
@@ -150,15 +147,14 @@ const DoctorLayout = () => {
         sx={{
           flexGrow: 1,
           p: 3,
-          width: { md: `calc(100% - ${drawerWidth}px)` },
+          width: { md: `calc(100% - 240px)` },
           mt: 8,
         }}
       >
-        {/* This renders nested routes */}
         <Outlet />
       </Box>
     </Box>
   );
 };
 
-export default DoctorLayout;
+export default Layout;

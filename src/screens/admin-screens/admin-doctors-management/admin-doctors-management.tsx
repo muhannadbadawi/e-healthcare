@@ -24,17 +24,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import MyButton from "../../../components/my-button";
 import ConfirmDialog from "../../../components/confirm-dialog";
-
-export interface Doctor {
-  _id: string;
-  name: string;
-  specialty: string;
-  email: string;
-  rate: number;
-  age: number;
-  gender: "Male" | "Female";
-  address: string;
-}
+import { Doctor } from "../../../models/doctor";
 
 const AdminDoctorsManagement: React.FC = () => {
   const { isOpen, openDialog, closeDialog } = useDialogHook();
@@ -88,7 +78,7 @@ const AdminDoctorsManagement: React.FC = () => {
 
   const handleConfirmDelete = async () => {
     if (doctorToDelete) {
-      await deleteDoctor(doctorToDelete._id)
+      await deleteDoctor(doctorToDelete._id);
       fetchDoctors();
     }
     setOpenConfirmDialog(false); // Close the dialog after confirming
@@ -100,10 +90,8 @@ const AdminDoctorsManagement: React.FC = () => {
 
   const onCloseDialog = () => {
     closeDialog();
-    if (editingDoctor) {
-      fetchDoctors(); // Refetch the doctors after editing
-      setEditingDoctor(null);
-    }
+    fetchDoctors(); // Refetch the doctors after editing
+    if (editingDoctor) setEditingDoctor(null);
   };
 
   return (
@@ -182,9 +170,6 @@ const AdminDoctorsManagement: React.FC = () => {
                 </TableCell>
                 <TableCell>
                   <strong>Rating</strong>
-                </TableCell>
-                <TableCell align="center">
-                  <strong>Actions</strong>
                 </TableCell>
               </TableRow>
             </TableHead>

@@ -1,7 +1,7 @@
 // src/api/authService.ts
 import { jwtDecode } from "jwt-decode";
 import api from "./axios";
-import { registerUserData } from "../models/register-user-data";
+import { registerClientData } from "../models/register-client-data";
 import { UserTypeEnum } from "../enums/user-type-enum";
 import toast from "react-hot-toast";
 
@@ -26,6 +26,7 @@ export const login = async (
       email,
       password,
     });
+    console.log("response: ", response);
 
     if (response.status !== 201) {
       throw new Error("Login failed");
@@ -55,7 +56,7 @@ export const login = async (
   }
 };
 
-export const register = async (userData: registerUserData) => {
+export const register = async (userData: registerClientData) => {
   const { confirmPassword, ...userDataWithoutConfirm } = userData;
   if (userData.password !== confirmPassword) {
     toast.error("Passwords do not match.");

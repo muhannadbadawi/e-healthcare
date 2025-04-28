@@ -1,11 +1,12 @@
 import { MedicalSpecialty } from "../enums/medical-specialty-enum";
 
-export interface registerDoctorData {
+export interface Doctor {
+  _id: string;
   name: string;
   email: string;
-  password: string;
   age: string;
   gender: string;
   address: string;
   specialty: MedicalSpecialty;
+  rate: number;
 }

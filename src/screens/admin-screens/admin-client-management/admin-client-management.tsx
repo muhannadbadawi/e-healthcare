@@ -14,9 +14,7 @@ import {
   Skeleton,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { useDialogHook } from "../../../hook/use-dialog";
-import AddDoctorDialog from "./add-client-dialog/add-client-dialog";
-import { deleteDoctor, getClients } from "../../../api/adminService";
+import { deleteClient, getClients } from "../../../api/adminService";
 import ListIcon from "@mui/icons-material/List";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import LockResetIcon from "@mui/icons-material/LockReset";
@@ -36,11 +34,9 @@ export interface Client {
 }
 
 const AdminClientManagement: React.FC = () => {
-  const { isOpen, openDialog, closeDialog } = useDialogHook();
   const [doctors, setDoctors] = useState<Client[]>([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedDoctor, setSelectedDoctor] = useState<Client | null>(null);
-  const [editingDoctor, setEditingDoctor] = useState<Client | null>(null);
   const [loading, setLoading] = useState(true);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [doctorToDelete, setDoctorToDelete] = useState<Client | null>(null);
@@ -83,7 +79,7 @@ const AdminClientManagement: React.FC = () => {
 
   const handleConfirmDelete = async () => {
     if (doctorToDelete) {
-      await deleteDoctor(doctorToDelete._id);
+      await deleteClient(doctorToDelete._id);
       fetchDoctors();
     }
     setOpenConfirmDialog(false); // Close the dialog after confirming
@@ -91,14 +87,6 @@ const AdminClientManagement: React.FC = () => {
 
   const handleCancelDelete = () => {
     setOpenConfirmDialog(false); // Just close the dialog
-  };
-
-  const onCloseDialog = () => {
-    closeDialog();
-    if (editingDoctor) {
-      fetchDoctors(); // Refetch the doctors after editing
-      setEditingDoctor(null);
-    }
   };
 
   return (
@@ -244,7 +232,6 @@ const AdminClientManagement: React.FC = () => {
           </Typography>
         )}
       </TableContainer>
-
 
       <ConfirmDialog
         open={openConfirmDialog}

@@ -22,8 +22,8 @@ import { addDoctor, updateDoctor } from "../../../../api/adminService";
 import { registerDoctorData } from "../../../../models/register-doctor-data";
 import toast from "react-hot-toast";
 import MyButton from "../../../../components/my-button";
-import { Doctor } from "../admin-doctors-management";
 import { useEffect } from "react";
+import { Doctor } from "../../../../models/doctor";
 
 interface IAddDoctorDialogProps {
   isOpen: boolean;
@@ -43,9 +43,9 @@ const AddDoctorDialog = ({
     : "Add a New Doctor";
   const [formValues, setFormValues] = useState<Omit<registerDoctorData, "id">>({
     name: editingDoctor ? editingDoctor.name : "",
-    specialty: editingDoctor ? editingDoctor.specialty : "",
+    specialty: editingDoctor ? editingDoctor.specialty : MedicalSpecialty.GeneralMedicine,
     email: editingDoctor ? editingDoctor.email : "",
-    age: editingDoctor ? editingDoctor.age : 30,
+    age: editingDoctor ? editingDoctor.age : "30",
     gender: editingDoctor ? editingDoctor.gender : "Male",
     address: editingDoctor ? editingDoctor.address : "",
     password: "",
@@ -70,7 +70,11 @@ const AddDoctorDialog = ({
   };
 
   const handleModalSubmit = async () => {
-    if (formValues.name && formValues.email && (formValues.password || editingDoctor)) {
+    if (
+      formValues.name &&
+      formValues.email &&
+      (formValues.password || editingDoctor)
+    ) {
       if (editingDoctor) {
         const isSuccess = await updateDoctor(editingDoctor._id, formValues);
         console.log("isSuccess: ", isSuccess);
@@ -91,32 +95,30 @@ const AddDoctorDialog = ({
       }
     }
   };
-  
 
-
-useEffect(() => {
-  if (editingDoctor) {
-    setFormValues({
-      name: editingDoctor.name,
-      specialty: editingDoctor.specialty,
-      email: editingDoctor.email,
-      age: editingDoctor.age,
-      gender: editingDoctor.gender,
-      address: editingDoctor.address,
-      password: "", 
-    });
-  } else {
-    setFormValues({
-      name: "",
-      specialty: "",
-      email: "",
-      age: 30,
-      gender: "Male",
-      address: "",
-      password: "",
-    });
-  }
-}, [editingDoctor]);
+  useEffect(() => {
+    if (editingDoctor) {
+      setFormValues({
+        name: editingDoctor.name,
+        specialty: editingDoctor.specialty,
+        email: editingDoctor.email,
+        age: editingDoctor.age,
+        gender: editingDoctor.gender,
+        address: editingDoctor.address,
+        password: "",
+      });
+    } else {
+      setFormValues({
+        name: "",
+        specialty: MedicalSpecialty.GeneralMedicine,
+        email: "",
+        age: "30",
+        gender: "Male",
+        address: "",
+        password: "",
+      });
+    }
+  }, [editingDoctor]);
 
   return (
     <Dialog

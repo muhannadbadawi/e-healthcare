@@ -34,6 +34,17 @@ export const deleteDoctor = async (id: string) => {
   }
 };
 
+
+export const deleteClient = async (id: string) => {
+  try {
+    const response = await api.delete(`/admin/deleteClient/${id}`);
+    return response.status === 200;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+
 export const getDoctors = async () => {
   const response = await api.post("/admin/getDoctors", {});
   return response.data;

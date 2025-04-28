@@ -1,15 +1,22 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import Login from "../screens/login-screen/Login";
 import Register from "../screens/register-screen/Register";
 import ProtectedRoute from "./ProtectedRoute";
 import AdminLayout from "../screens/admin-screens/admin-layout";
-import DoctorHome from "../screens/doctor-screens/doctor-home/doctor-home";
-import ClientHome from "../screens/client-screens/home";
-import { UserTypeEnum } from "../enums/user-type-enum";
+import DoctorLayout from "../screens/doctor-screens/doctor-layout";
+import ClientLayout from "../screens/client-screens/client-layout";
+
 import AdminDashboard from "../screens/admin-screens/admin-dashboard/admin-dashboard";
 import AdminDoctorsManagement from "../screens/admin-screens/admin-doctors-management/admin-doctors-management";
 import AdminClientManagement from "../screens/admin-screens/admin-client-management/admin-client-management";
-import DoctorLayout from "../screens/doctor-screens/admin-layout";
+import AdminSettings from "../screens/admin-screens/admin-settings/admin-settings";
+
+import DoctorHome from "../screens/doctor-screens/doctor-home/doctor-home";
+
+import ClientHome from "../screens/client-screens/client-home/client-home";
+import MedicalSpecialties from "../screens/client-screens/medical-specialties/medical-specialties";
+
+import { UserTypeEnum } from "../enums/user-type-enum";
 
 export const router = createBrowserRouter([
   {
@@ -19,10 +26,6 @@ export const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
-  },
-  {
-    path: "*",
-    element: <div>404 - Page Not Found</div>, // or a dedicated NotFound component
   },
   {
     path: "/register",
@@ -36,18 +39,11 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
-      {
-        path: "home",
-        element: <AdminDashboard />, // Default to dashboard
-      },
-      {
-        path: "doctors",
-        element: <AdminDoctorsManagement />, // This could be a specific page for managing doctors
-      },
-      {
-        path: "clients",
-        element: <AdminClientManagement />, // This could be a specific page for managing clients
-      },
+      { path: "", element: <Navigate to="home" replace /> }, // redirect /admin -> /admin/home
+      { path: "home", element: <AdminDashboard /> },
+      { path: "doctors", element: <AdminDoctorsManagement /> },
+      { path: "clients", element: <AdminClientManagement /> },
+      { path: "settings", element: <AdminSettings /> },
     ],
   },
   {
@@ -58,26 +54,25 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
-      {
-        path: "home",
-        element: <DoctorHome />, // Default to dashboard
-      },
+      { path: "", element: <Navigate to="home" replace /> }, // redirect /doctor -> /doctor/home
+      { path: "home", element: <DoctorHome /> },
     ],
   },
-  // {
-  //   path: "/doctor",
-  //   element: (
-  //     <ProtectedRoute role={UserTypeEnum.DOCTOR}>
-  //       {/* <DoctorLayout /> */}
-  //     </ProtectedRoute>
-  //   ),
-  // },
   {
-    path: "/client/home",
+    path: "/client",
     element: (
       <ProtectedRoute role={UserTypeEnum.CLIENT}>
-        <ClientHome />
+        <ClientLayout />
       </ProtectedRoute>
     ),
+    children: [
+      { path: "", element: <Navigate to="home" replace /> }, // redirect /client -> /client/home
+      { path: "home", element: <ClientHome /> },
+      { path: "medical-specialties", element: <MedicalSpecialties /> },
+    ],
+  },
+  {
+    path: "*",
+    element: <div>404 - Page Not Found</div>, // could be a NotFound component
   },
 ]);
