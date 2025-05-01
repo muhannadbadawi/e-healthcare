@@ -1,5 +1,6 @@
 import { Avatar, Box, Typography, Paper, Chip } from "@mui/material";
 import { Doctor } from "../../../../models/doctor";
+import { useNavigate } from "react-router-dom"; // في حال كنت تستخدم react-router
 
 interface IDoctorsListProps {
   doctorList: Doctor[];
@@ -20,15 +21,23 @@ const getStatusColor = (status: DoctorStatus) => {
 };
 
 const DoctorsList = ({ doctorList }: IDoctorsListProps) => {
+  const navigate = useNavigate();
+
+  const openChat = (doctorId: string) => {
+    navigate(`/client/chat/${doctorId}`);
+  };
+
   return (
     <Box p={2} display="grid" gap={2}>
       {doctorList.map((doctor) => {
+        console.log("doctor: ", doctor);
         const status: DoctorStatus = "offline"; // Static for now
 
         return (
           <Paper
             key={doctor._id}
             elevation={2}
+            onClick={() => openChat(doctor.userId)}
             sx={{
               display: "flex",
               alignItems: "center",
@@ -36,6 +45,7 @@ const DoctorsList = ({ doctorList }: IDoctorsListProps) => {
               p: 2,
               borderRadius: 3,
               transition: "all 0.3s ease",
+              cursor: "pointer",
               "&:hover": {
                 boxShadow: 6,
                 transform: "translateY(-2px)",
@@ -57,7 +67,13 @@ const DoctorsList = ({ doctorList }: IDoctorsListProps) => {
 
             {/* Info */}
             <Box flex={1} minWidth={0}>
-              <Box display="flex" alignItems="center" gap={1} flexWrap="wrap" mb={0.5}>
+              <Box
+                display="flex"
+                alignItems="center"
+                gap={1}
+                flexWrap="wrap"
+                mb={0.5}
+              >
                 <Typography
                   fontWeight="bold"
                   color="text.primary"
@@ -80,19 +96,11 @@ const DoctorsList = ({ doctorList }: IDoctorsListProps) => {
                 />
               </Box>
 
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                noWrap
-              >
+              <Typography variant="body2" color="text.secondary" noWrap>
                 {doctor.specialty}
               </Typography>
 
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                mt={0.3}
-              >
+              <Typography variant="body2" color="text.secondary" mt={0.3}>
                 <strong>${doctor.rate}</strong> per minute
               </Typography>
 

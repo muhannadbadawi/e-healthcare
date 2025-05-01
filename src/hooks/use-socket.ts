@@ -1,22 +1,27 @@
 // src/hooks/useSocket.ts
-import { useEffect, useState } from 'react';
-import { io, Socket } from 'socket.io-client';
+import { useEffect, useState } from "react";
+import { io, Socket } from "socket.io-client";
 
-const useSocket = (serverUrl: string) => {
+const useSocket = (userId?: string) => {
   const [socket, setSocket] = useState<Socket | null>(null);
+  const serverUrl = "http://127.0.0.1:3000";
 
   useEffect(() => {
+    if (!userId) return; // لا تعمل اتصال بدون userId
+
     const socketConnection = io(serverUrl, {
-      transports: ['websocket'], // use websocket only for better performance
-      withCredentials: true,      // Ensure that cookies are sent
+      transports: ["websocket"],
+      withCredentials: true,
+      query: { userId }, // نرسل userId للسيرفر عند الاتصال
     });
+    console.log("socketConnection: ", socketConnection);
 
     setSocket(socketConnection);
 
     return () => {
       socketConnection.disconnect();
     };
-  }, [serverUrl]);
+  }, [serverUrl, userId]);
 
   return socket;
 };

@@ -110,6 +110,8 @@ e-healthcare
 │  │  │  └─ admin-settings
 │  │  │     └─ admin-settings.tsx
 │  │  ├─ client-screens
+│  │  │  ├─ client-chat
+│  │  │  │  └─ client-chat.tsx
 │  │  │  ├─ client-home
 │  │  │  │  └─ client-home.tsx
 │  │  │  ├─ client-layout.tsx
@@ -118,6 +120,8 @@ e-healthcare
 │  │  │     │  └─ doctor-list.tsx
 │  │  │     └─ medical-specialties.tsx
 │  │  ├─ doctor-screens
+│  │  │  ├─ doctor-chat
+│  │  │  │  └─ doctor-chat.tsx
 │  │  │  ├─ doctor-home
 │  │  │  │  └─ doctor-home.tsx
 │  │  │  └─ doctor-layout.tsx

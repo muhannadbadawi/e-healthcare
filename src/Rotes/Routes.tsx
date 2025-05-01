@@ -12,9 +12,11 @@ import AdminClientManagement from "../screens/admin-screens/admin-client-managem
 import AdminSettings from "../screens/admin-screens/admin-settings/admin-settings";
 
 import DoctorHome from "../screens/doctor-screens/doctor-home/doctor-home";
+import DoctorChat from "../screens/doctor-screens/doctor-chat/doctor-chat"; 
 
 import ClientHome from "../screens/client-screens/client-home/client-home";
 import MedicalSpecialties from "../screens/client-screens/medical-specialties/medical-specialties";
+import ClientChat from "../screens/client-screens/client-chat/client-chat"; 
 
 import { UserTypeEnum } from "../enums/user-type-enum";
 
@@ -39,7 +41,7 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
-      { path: "", element: <Navigate to="home" replace /> }, // redirect /admin -> /admin/home
+      { path: "", element: <Navigate to="home" replace /> },
       { path: "home", element: <AdminDashboard /> },
       { path: "doctors", element: <AdminDoctorsManagement /> },
       { path: "clients", element: <AdminClientManagement /> },
@@ -54,8 +56,9 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
-      { path: "", element: <Navigate to="home" replace /> }, // redirect /doctor -> /doctor/home
+      { path: "", element: <Navigate to="home" replace /> },
       { path: "home", element: <DoctorHome /> },
+      { path: "chat", element: <DoctorChat /> }, 
     ],
   },
   {
@@ -66,13 +69,14 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
-      { path: "", element: <Navigate to="home" replace /> }, // redirect /client -> /client/home
+      { path: "", element: <Navigate to="home" replace /> },
       { path: "home", element: <ClientHome /> },
       { path: "medical-specialties", element: <MedicalSpecialties /> },
+      { path: "chat/:doctorId", element: <ClientChat /> }, 
     ],
   },
   {
     path: "*",
-    element: <div>404 - Page Not Found</div>, // could be a NotFound component
+    element: <div>404 - Page Not Found</div>, 
   },
 ]);

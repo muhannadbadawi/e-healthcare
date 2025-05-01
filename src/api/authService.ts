@@ -26,7 +26,6 @@ export const login = async (
       email,
       password,
     });
-    console.log("response: ", response);
 
     if (response.status !== 201) {
       throw new Error("Login failed");

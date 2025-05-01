@@ -9,4 +9,5 @@ export interface Doctor {
   address: string;
   specialty: MedicalSpecialty;
   rate: number;
+  userId: string;
 }

@@ -77,7 +77,6 @@ const AddDoctorDialog = ({
     ) {
       if (editingDoctor) {
         const isSuccess = await updateDoctor(editingDoctor._id, formValues);
-        console.log("isSuccess: ", isSuccess);
         if (isSuccess) {
           toast.success("Doctor updated successfully!");
           onClose();

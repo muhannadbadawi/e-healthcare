@@ -13,6 +13,7 @@ const DoctorLayout = () => {
 
   const navItems = [
     { text: "Home", path: "/doctor/home", icon: <HomeIcon /> },
+    { text: "Chat", path: "/doctor/chat", icon: <HistoryIcon /> },
     { text: "History", path: "/doctor/history", icon: <HistoryIcon /> },
     { text: "Settings", path: "/doctor/settings", icon: <SettingsIcon /> },
     { text: "Logout", action: handleLogout, icon: <LogoutIcon /> },
