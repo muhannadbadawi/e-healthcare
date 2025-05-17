@@ -56,9 +56,12 @@ const Layout = ({ navItems, defaultRout }: ILayoutProps) => {
         {navItems.map((item, index) => (
           <ListItem key={index} disablePadding>
             <ListItemButton
-              onClick={() =>
-                item.path ? navigate(item.path) : item.action?.()
-              }
+              onClick={() => {
+                if (item.path) navigate(item.path);
+                else item.action?.();
+
+                if (mobileOpen) setMobileOpen(false);
+              }}  
             >
               <ListItemIcon
                 sx={{

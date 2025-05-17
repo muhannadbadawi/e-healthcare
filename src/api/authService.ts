@@ -50,7 +50,7 @@ export const login = async (
     return { ...decodedToken };
   } catch (error) {
     console.error("Login error:", error);
-    toast.error("Invalid email or password. Please try again.");
+    toast.error("Invalid email or password. Please try again.",{position:"bottom-left"});
     throw new Error("Login failed");
   }
 };

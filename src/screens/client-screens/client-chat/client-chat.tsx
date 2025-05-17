@@ -14,35 +14,35 @@ const ClientChat = () => {
   const socket = useSocket(userId); // استدعاء هوك useSocket
 
   useEffect(() => {
-    if (!socket) return;
-    // console.log("socket: ", socket);
+    if (!socket || !userId) return;
 
-    // الانضمام إلى غرفة المحادثة الخاصة بالطبيب عند تحميل الصفحة
-    socket.emit("join", doctorId);
-
-    // استقبال الرسائل
-    socket.on("message", (message: string) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
+    socket.on("message", (data: { from: string; message: string }) => {
+      // إضافة بعض المنطق لتمييز الرسائل الواردة من العميل أو الطبيب
+      setMessages((prev) => [
+        ...prev,
+        `${data.from === userId ? "You" : "Doctor"}: ${data.message}`,
+      ]);
     });
 
-    // التنظيف عند فك الاتصال
+    socket.emit("join", userId);
+
     return () => {
       socket.off("message");
     };
-  }, [doctorId, socket]);
+  }, [socket, userId]);
 
-  const sendMessage = () => {
-    if (newMessage.trim() !== "") {
-      console.log("doctorId: ", doctorId);
 
-      socket?.emit("privateMessage", {
-        recipientId: doctorId,
-        message: newMessage,
-      }); // إرسال الرسالة عبر WebSocket
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
-      setNewMessage("");
-    }
-  };
+const sendMessage = () => {
+  if (newMessage.trim() !== "") {
+    socket?.emit("privateMessage", {
+      recipientId: doctorId,
+      message: newMessage,
+    });
+
+    setMessages((prevMessages) => [...prevMessages, `You: ${newMessage}`]);
+    setNewMessage("");
+  }
+};
 
   return (
     <div>

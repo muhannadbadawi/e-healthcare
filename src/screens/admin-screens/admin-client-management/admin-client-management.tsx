@@ -11,15 +11,16 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  Skeleton,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { deleteClient, getClients } from "../../../api/adminService";
+import { deleteClient, getClients, resetClientPassword } from "../../../api/adminService";
 import ListIcon from "@mui/icons-material/List";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import LockResetIcon from "@mui/icons-material/LockReset";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ConfirmDialog from "../../../components/confirm-dialog";
+import TableSkeleton from "../table-skeleton/table-skeleton";
+import toast from "react-hot-toast";
 
 export interface Client {
   _id: string;
@@ -31,56 +32,65 @@ export interface Client {
   height: string;
   weight: string;
   allergies: string;
+  userId: string;
 }
 
 const AdminClientManagement: React.FC = () => {
-  const [doctors, setDoctors] = useState<Client[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedDoctor, setSelectedDoctor] = useState<Client | null>(null);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [loading, setLoading] = useState(true);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-  const [doctorToDelete, setDoctorToDelete] = useState<Client | null>(null);
+  const [clientToDelete, setClientToDelete] = useState<Client | null>(null);
 
   const open = Boolean(anchorEl);
 
   const handleMenuClick = (
     event: React.MouseEvent<HTMLElement>,
-    doctor: Client
+    client: Client
   ) => {
     setAnchorEl(event.currentTarget);
-    setSelectedDoctor(doctor);
+    setSelectedClient(client);
   };
 
   const handleMenuClose = () => {
     setAnchorEl(null);
-    setSelectedDoctor(null);
+    setSelectedClient(null);
   };
 
-  const fetchDoctors = async () => {
+  const fetchClients = async () => {
     setLoading(true);
-    const doctors = (await getClients()) as Client[];
-    setDoctors(doctors);
+    const clients = (await getClients()) as Client[];
+    setClients(clients);
     setLoading(false);
   };
 
   useEffect(() => {
-    fetchDoctors();
+    fetchClients();
   }, []);
 
-  const handleDelete = (doctor: Client) => {
-    setDoctorToDelete(doctor); // Set the doctor to delete
+  const handleDelete = (client: Client) => {
+    setClientToDelete(client); // Set the client to delete
     setOpenConfirmDialog(true); // Open the confirmation dialog
   };
 
-  const resetPassword = (doctor: Client) => {
-    setDoctorToDelete(doctor); // Set the doctor to delete
-    setOpenConfirmDialog(true); // Open the confirmation dialog
+  const resetPassword = async (client: Client) => {
+    const reset = await resetClientPassword(client.userId)
+    if (reset) {
+      toast.success(`Password reset successfully to ${client.name}.`, {
+        duration: 2000, position: "bottom-left",
+    });
+    } else {
+      toast.error("Failed to reset password.", {
+        duration: 2000, position: "bottom-left",
+    });
+    }
   };
 
   const handleConfirmDelete = async () => {
-    if (doctorToDelete) {
-      await deleteClient(doctorToDelete._id);
-      fetchDoctors();
+    if (clientToDelete) {
+      await deleteClient(clientToDelete._id);
+      fetchClients();
     }
     setOpenConfirmDialog(false); // Close the dialog after confirming
   };
@@ -100,51 +110,8 @@ const AdminClientManagement: React.FC = () => {
         sx={{ maxHeight: 300, borderRadius: 3 }}
       >
         {loading ? (
-          <Table stickyHeader>
-            <TableHead>
-              <TableRow>
-                <TableCell>
-                  <Skeleton width={150} />
-                </TableCell>
-                <TableCell>
-                  <Skeleton width={100} />
-                </TableCell>
-                <TableCell>
-                  <Skeleton width={150} />
-                </TableCell>
-                <TableCell>
-                  <Skeleton width={100} />
-                </TableCell>
-                <TableCell align="center">
-                  <Skeleton width={100} />
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {Array(5)
-                .fill(0)
-                .map((_, index) => (
-                  <TableRow key={index}>
-                    <TableCell>
-                      <Skeleton width={200} />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton width={120} />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton width={180} />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton width={80} />
-                    </TableCell>
-                    <TableCell align="center">
-                      <Skeleton width={80} />
-                    </TableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        ) : doctors.length > 0 ? (
+          <TableSkeleton />
+        ) : clients.length > 0 ? (
           <Table stickyHeader>
             <TableHead>
               <TableRow>
@@ -166,17 +133,17 @@ const AdminClientManagement: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {doctors.map((doctor) => (
-                <TableRow key={doctor._id} hover>
-                  <TableCell>{doctor.name}</TableCell>
-                  <TableCell>{doctor.email}</TableCell>
-                  <TableCell>{doctor.age}</TableCell>
-                  <TableCell>{doctor.gender}</TableCell>
-                  <TableCell>{doctor.address}</TableCell>
+              {clients.map((client) => (
+                <TableRow key={client._id} hover>
+                  <TableCell>{client.name}</TableCell>
+                  <TableCell>{client.email}</TableCell>
+                  <TableCell>{client.age}</TableCell>
+                  <TableCell>{client.gender}</TableCell>
+                  <TableCell>{client.address}</TableCell>
 
                   <TableCell align="center">
                     <IconButton
-                      onClick={(e) => handleMenuClick(e, doctor)}
+                      onClick={(e) => handleMenuClick(e, client)}
                       sx={{
                         color: "#7b1fa2",
                       }}
@@ -205,7 +172,7 @@ const AdminClientManagement: React.FC = () => {
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
-                        resetPassword(selectedDoctor!);
+                        resetPassword(selectedClient!);
                         handleMenuClose();
                       }}
                     >
@@ -214,7 +181,7 @@ const AdminClientManagement: React.FC = () => {
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
-                        handleDelete(selectedDoctor!);
+                        handleDelete(selectedClient!);
                         handleMenuClose();
                       }}
                     >
@@ -238,7 +205,7 @@ const AdminClientManagement: React.FC = () => {
         onClose={handleCancelDelete}
         onConfirm={handleConfirmDelete}
         title="Delete Client"
-        message="Are you sure you want to delete this doctor?"
+        message={`Are you sure you want to delete ${clientToDelete?.name}?`}
         confirmText="Confirm Delete"
         confirmButtonColor="error"
       />

@@ -32,4 +32,7 @@ api.interceptors.response.use(
   }
 );
 
+export const isSuccess = (status: number) => status >= 200 && status < 300;
+
+
 export default api;

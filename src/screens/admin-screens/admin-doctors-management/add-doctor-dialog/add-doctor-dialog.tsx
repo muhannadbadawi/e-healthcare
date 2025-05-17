@@ -27,7 +27,7 @@ import { Doctor } from "../../../../models/doctor";
 
 interface IAddDoctorDialogProps {
   isOpen: boolean;
-  onClose: () => void;
+  onClose: (fromSubmit?: boolean) => void;
   editingDoctor: Doctor | null;
 }
 
@@ -43,7 +43,9 @@ const AddDoctorDialog = ({
     : "Add a New Doctor";
   const [formValues, setFormValues] = useState<Omit<registerDoctorData, "id">>({
     name: editingDoctor ? editingDoctor.name : "",
-    specialty: editingDoctor ? editingDoctor.specialty : MedicalSpecialty.GeneralMedicine,
+    specialty: editingDoctor
+      ? editingDoctor.specialty
+      : MedicalSpecialty.GeneralMedicine,
     email: editingDoctor ? editingDoctor.email : "",
     age: editingDoctor ? editingDoctor.age : "30",
     gender: editingDoctor ? editingDoctor.gender : "Male",
@@ -79,7 +81,7 @@ const AddDoctorDialog = ({
         const isSuccess = await updateDoctor(editingDoctor._id, formValues);
         if (isSuccess) {
           toast.success("Doctor updated successfully!");
-          onClose();
+          onClose(true);
         } else {
           toast.error("Failed to update doctor.");
         }
@@ -87,7 +89,7 @@ const AddDoctorDialog = ({
         const isSuccess = await addDoctor(formValues);
         if (isSuccess) {
           toast.success("Doctor added successfully!");
-          onClose();
+          onClose(true);
         } else {
           toast.error("Something went wrong. Please try again.");
         }
@@ -122,7 +124,7 @@ const AddDoctorDialog = ({
   return (
     <Dialog
       open={isOpen}
-      onClose={onClose}
+      onClose={() => onClose(false)}
       maxWidth="sm"
       fullWidth
       scroll="body"
@@ -161,6 +163,7 @@ const AddDoctorDialog = ({
         <Box sx={{ px: 4, py: 3 }}>
           <Stack spacing={3}>
             <TextField
+              size = "small"
               label="Email Address"
               name="email"
               type="email"
@@ -171,6 +174,7 @@ const AddDoctorDialog = ({
               disabled={!!editingDoctor}
             />
             <TextField
+              size = "small"
               label="Full Name"
               name="name"
               value={formValues.name}
@@ -179,6 +183,7 @@ const AddDoctorDialog = ({
               required
             />
             <TextField
+              size = "small"
               label="Password"
               name="password"
               type="password"
@@ -188,7 +193,7 @@ const AddDoctorDialog = ({
               required
             />
             <Stack direction="row" spacing={2}>
-              <FormControl fullWidth>
+              <FormControl fullWidth size="small">
                 <InputLabel>Specialty</InputLabel>
                 <Select
                   name="specialty"
@@ -206,6 +211,7 @@ const AddDoctorDialog = ({
                 </Select>
               </FormControl>
               <TextField
+                size = "small"
                 label="Address"
                 name="address"
                 value={formValues.address}
@@ -250,7 +256,7 @@ const AddDoctorDialog = ({
       </DialogContent>
 
       <DialogActions sx={{ px: 4, pb: 3, pt: 2, background: "#f3e5f5" }}>
-        <MyButton onClick={onClose} variant="outlined" sx={{ minWidth: 120 }}>
+        <MyButton onClick={()=> {onClose(false)}} variant="outlined" sx={{ minWidth: 120 }}>
           Cancel
         </MyButton>
         <MyButton onClick={handleModalSubmit} variant="contained" fullWidth>

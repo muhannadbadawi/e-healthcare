@@ -1,5 +1,5 @@
 import { registerDoctorData } from "../models/register-doctor-data";
-import api from "./axios";
+import api, { isSuccess } from "./axios";
 
 export const getCounts = async () => {
   const response = await api.post("/admin/getCounts", {});
@@ -9,6 +9,19 @@ export const getCounts = async () => {
 export const addDoctor = async (newDoctor: registerDoctorData) => {
   const response = await api.post("/admin/addDoctor", newDoctor);
   return response.status === 201;
+};
+
+export const updateAdmin = async (
+  id: string,
+  data: {name: string; newPassword?: string, currentPassword: string}
+) => {
+  try {
+    const response = await api.put(`/admin/editAdmin/${id}`, data);
+    return isSuccess(response.status);
+  } catch (error) {
+    console.error("Error updating admin:", error);
+    return false;
+  }
 };
 
 export const updateDoctor = async (
@@ -34,7 +47,6 @@ export const deleteDoctor = async (id: string) => {
   }
 };
 
-
 export const deleteClient = async (id: string) => {
   try {
     const response = await api.delete(`/admin/deleteClient/${id}`);
@@ -54,3 +66,13 @@ export const getClients = async () => {
   const response = await api.post("/admin/getClients", {});
   return response.data;
 };
+
+export const resetClientPassword = async (id: string) => {
+  try {
+    const response = await api.post(`/admin/resetClientPassword/${id}`, {});
+    return isSuccess(response.status);
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+}

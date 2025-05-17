@@ -2,26 +2,36 @@
 import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
+const SOCKET_URL = "http://127.0.0.1:3000";
+
+let socketInstance: Socket | null = null;
+
 const useSocket = (userId?: string) => {
   const [socket, setSocket] = useState<Socket | null>(null);
-  const serverUrl = "http://127.0.0.1:3000";
 
   useEffect(() => {
-    if (!userId) return; // لا تعمل اتصال بدون userId
+    if (!userId) return;
 
-    const socketConnection = io(serverUrl, {
-      transports: ["websocket"],
-      withCredentials: true,
-      query: { userId }, // نرسل userId للسيرفر عند الاتصال
-    });
-    console.log("socketConnection: ", socketConnection);
+    if (!socketInstance) {
+      socketInstance = io(SOCKET_URL, {
+        transports: ["websocket"],
+        withCredentials: true,
+        query: { userId },
+      });
 
-    setSocket(socketConnection);
+      console.log("✅ socket created");
+    } else {
+      console.log("♻️ using existing socket");
+    }
+
+    setSocket(socketInstance);
 
     return () => {
-      socketConnection.disconnect();
+      // لا تفصل الاتصال هنا، خلي connection واحدة شغالة طول ما المستخدم موجود
+      // socketInstance?.disconnect(); ❌
+      // فقط نظف الـ listeners من هذا ال component
     };
-  }, [serverUrl, userId]);
+  }, [userId]);
 
   return socket;
 };

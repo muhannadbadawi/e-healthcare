@@ -12,7 +12,6 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  Skeleton,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDialogHook } from "../../../hooks/use-dialog";
@@ -25,6 +24,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import MyButton from "../../../components/my-button";
 import ConfirmDialog from "../../../components/confirm-dialog";
 import { Doctor } from "../../../models/doctor";
+import TableSkeleton from "../table-skeleton/table-skeleton";
 
 const AdminDoctorsManagement: React.FC = () => {
   const { isOpen, openDialog, closeDialog } = useDialogHook();
@@ -88,9 +88,11 @@ const AdminDoctorsManagement: React.FC = () => {
     setOpenConfirmDialog(false); // Just close the dialog
   };
 
-  const onCloseDialog = () => {
+  const onCloseDialog = (fromSubmit = false) => {
     closeDialog();
-    fetchDoctors(); // Refetch the doctors after editing
+    if(fromSubmit){
+      fetchDoctors(); // Refetch the doctors after editing
+    }
     if (editingDoctor) setEditingDoctor(null);
   };
 
@@ -111,50 +113,7 @@ const AdminDoctorsManagement: React.FC = () => {
         sx={{ maxHeight: 300, borderRadius: 3 }}
       >
         {loading ? (
-          <Table stickyHeader>
-            <TableHead>
-              <TableRow>
-                <TableCell>
-                  <Skeleton width={150} />
-                </TableCell>
-                <TableCell>
-                  <Skeleton width={100} />
-                </TableCell>
-                <TableCell>
-                  <Skeleton width={150} />
-                </TableCell>
-                <TableCell>
-                  <Skeleton width={100} />
-                </TableCell>
-                <TableCell align="center">
-                  <Skeleton width={100} />
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {Array(5)
-                .fill(0)
-                .map((_, index) => (
-                  <TableRow key={index}>
-                    <TableCell>
-                      <Skeleton width={200} />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton width={120} />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton width={180} />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton width={80} />
-                    </TableCell>
-                    <TableCell align="center">
-                      <Skeleton width={80} />
-                    </TableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
+          <TableSkeleton />
         ) : doctors.length > 0 ? (
           <Table stickyHeader>
             <TableHead>

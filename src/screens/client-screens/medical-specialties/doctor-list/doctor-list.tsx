@@ -1,6 +1,9 @@
 import { Avatar, Box, Typography, Paper, Chip } from "@mui/material";
 import { Doctor } from "../../../../models/doctor";
-import { useNavigate } from "react-router-dom"; // في حال كنت تستخدم react-router
+// import { useNavigate } from "react-router-dom"; // في حال كنت تستخدم react-router
+import useSocket from "../../../../hooks/use-socket";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 interface IDoctorsListProps {
   doctorList: Doctor[];
@@ -21,23 +24,60 @@ const getStatusColor = (status: DoctorStatus) => {
 };
 
 const DoctorsList = ({ doctorList }: IDoctorsListProps) => {
-  const navigate = useNavigate();
+  console.log("doctorList: ", doctorList);
+  const currentUser = localStorage.getItem("user"); // الحصول على بيانات المستخدم من localStorage
+  const userId = currentUser ? JSON.parse(currentUser).id : null; // التأكد من وجود userId في localStorage
 
-  const openChat = (doctorId: string) => {
-    navigate(`/client/chat/${doctorId}`);
+  // const navigate = useNavigate();
+  const socket = useSocket(userId); // استدعاء هوك useSocket
+
+  const [doctorStatuses, setDoctorStatuses] = useState<
+    Record<string, DoctorStatus>
+  >({});
+
+  const activeDoctors = doctorList.filter((doctor) =>
+    ["online", "busy"].includes(doctorStatuses[doctor.userId])
+  );
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on(
+      "doctorStatusUpdate",
+      (data: { doctorId: string; status: DoctorStatus }) => {
+        setDoctorStatuses((prev) => ({
+          ...prev,
+          [data.doctorId]: data.status,
+        }));
+      }
+    );
+
+    return () => {
+      socket.off("doctorStatusUpdate");
+    };
+  }, [socket]);
+  const openChat = (doctorId: string, status: DoctorStatus) => {
+    // navigate(`/client/chat/${doctorId}`);
+    if (status === "online") {
+      socket?.emit("chatRequest", {
+        recipientId: doctorId,
+        requestType: "REQUEST",
+      });
+    }else{
+      toast.error("The doctor is busy, please try again later.")
+    }
   };
 
   return (
     <Box p={2} display="grid" gap={2}>
-      {doctorList.map((doctor) => {
+      {activeDoctors.map((doctor) => {
         console.log("doctor: ", doctor);
-        const status: DoctorStatus = "offline"; // Static for now
+        const status: DoctorStatus = doctorStatuses[doctor.userId] || "offline"; // Static for now
 
         return (
           <Paper
             key={doctor._id}
             elevation={2}
-            onClick={() => openChat(doctor.userId)}
+            onClick={() => openChat(doctor.userId, status)}
             sx={{
               display: "flex",
               alignItems: "center",
