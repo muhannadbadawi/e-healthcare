@@ -6,20 +6,56 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { logout } from "../../api/authService";
 import Layout from "../../components/layout";
 import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
-import { useCallback, useEffect } from "react";
-import useSocket from "../../hooks/use-socket";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { useNavigate } from "react-router-dom";
+import { useSocketContext } from "../../components/SocketContext";
+import { getBalance, saveBalance } from "../../api/clientService";
 
+export const BalanceContext = createContext<{
+  selectedSessionPrice: number | undefined;
+  balance: number | undefined;
+  updateBalance: (newBalance: number) => void;
+  updateSelectedSessionPrice?: (price: number) => void;
+}>({
+  selectedSessionPrice: undefined,
+  balance: undefined,
+  updateBalance: () => {},
+  updateSelectedSessionPrice: () => {},
+});
+
+export const useBalanceContext = () => useContext(BalanceContext);
 const ClientLayout = () => {
-  const currentUser = localStorage.getItem("user"); // الحصول على بيانات المستخدم من localStorage
-  const userId = currentUser ? JSON.parse(currentUser).id : null; // التأكد من وجود userId في localStorage
-  const socket = useSocket(userId); // استدعاء هوك useSocket
+  const [balance, setBalance] = useState<number>(0);
+  const [selectedSessionPrice, setSelectedSessionPrice] = useState<number>();
+
+  const { socket } = useSocketContext();
   const navigate = useNavigate();
+
+  const updateBalance = async (newBalance: number) => {
+    setBalance(newBalance);
+    await saveBalance(newBalance);
+  };
+
+  const updateSelectedSessionPrice = (price: number) => {
+    setSelectedSessionPrice(price);
+  };
+
+  const fetchBalance = async () => {
+    const clientBalance = await getBalance();
+    setBalance(clientBalance);
+  };
 
   useEffect(() => {
     if (!socket) return;
 
     socket.on("chatRequest", handleChatRequest);
+    fetchBalance();
 
     return () => {
       socket.off("chatRequest", handleChatRequest);
@@ -28,7 +64,6 @@ const ClientLayout = () => {
 
   const handleChatRequest = useCallback(
     (data: { from: string; requestType: string }) => {
-      console.log("data.from: ", data.requestType);
       if (data.requestType === "AGREE") {
         navigate(`/client/chat/${data.from}`);
       }
@@ -37,7 +72,7 @@ const ClientLayout = () => {
   );
 
   const handleLogout = () => {
-    socket?.disconnect(); // ⬅️ فصل الاتصال قبل تسجيل الخروج
+    socket?.disconnect();
     logout();
   };
 
@@ -55,9 +90,11 @@ const ClientLayout = () => {
   ];
 
   return (
-    <Box sx={{ flex: 1, display: "flex" }}>
-      <Layout defaultRout="/client/home" navItems={navItems} />
-    </Box>
+    <BalanceContext.Provider value={{ balance, updateBalance, selectedSessionPrice, updateSelectedSessionPrice }}>
+      <Box sx={{ flex: 1, display: "flex" }}>
+        <Layout defaultRout="/client/home" navItems={navItems} />
+      </Box>
+    </BalanceContext.Provider>
   );
 };
 

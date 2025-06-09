@@ -66,6 +66,7 @@ export const register = async (userData: registerClientData) => {
 };
 
 export const logout = () => {
+
   window.location.href = "/login";
   localStorage.removeItem("token");
   localStorage.removeItem("user");

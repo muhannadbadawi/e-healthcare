@@ -51,6 +51,7 @@ export default tseslint.config({
     ...reactDom.configs.recommended.rules,
   },
 })
+
 ```
 e-healthcare
 ├─ eslint.config.js
@@ -80,7 +81,8 @@ e-healthcare
 │  ├─ components
 │  │  ├─ confirm-dialog.tsx
 │  │  ├─ layout.tsx
-│  │  └─ my-button.tsx
+│  │  ├─ my-button.tsx
+│  │  └─ SocketContext.tsx
 │  ├─ enums
 │  │  ├─ medical-specialty-enum.ts
 │  │  └─ user-type-enum.ts
@@ -93,7 +95,7 @@ e-healthcare
 │  │  ├─ doctor.ts
 │  │  ├─ register-client-data.ts
 │  │  └─ register-doctor-data.ts
-│  ├─ Rotes
+│  ├─ routes
 │  │  ├─ ProtectedRoute.tsx
 │  │  └─ Routes.tsx
 │  ├─ screens
@@ -107,11 +109,13 @@ e-healthcare
 │  │  │  │  │  └─ add-doctor-dialog.tsx
 │  │  │  │  └─ admin-doctors-management.tsx
 │  │  │  ├─ admin-layout.tsx
-│  │  │  └─ admin-settings
-│  │  │     └─ admin-settings.tsx
+│  │  │  ├─ admin-settings
+│  │  │  │  └─ admin-settings.tsx
+│  │  │  └─ table-skeleton
+│  │  │     └─ table-skeleton.tsx
+│  │  ├─ chat
+│  │  │  └─ chat.tsx
 │  │  ├─ client-screens
-│  │  │  ├─ client-chat
-│  │  │  │  └─ client-chat.tsx
 │  │  │  ├─ client-home
 │  │  │  │  └─ client-home.tsx
 │  │  │  ├─ client-layout.tsx
@@ -120,8 +124,6 @@ e-healthcare
 │  │  │     │  └─ doctor-list.tsx
 │  │  │     └─ medical-specialties.tsx
 │  │  ├─ doctor-screens
-│  │  │  ├─ doctor-chat
-│  │  │  │  └─ doctor-chat.tsx
 │  │  │  ├─ doctor-home
 │  │  │  │  └─ doctor-home.tsx
 │  │  │  └─ doctor-layout.tsx

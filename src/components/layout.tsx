@@ -12,10 +12,17 @@ import {
   ListItemText,
   Toolbar,
   Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { JSX, useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
+import { useBalanceContext } from "../screens/client-screens/client-layout";
 
 interface ILayoutProps {
   navItems: (
@@ -38,8 +45,13 @@ interface ILayoutProps {
 const Layout = ({ navItems, defaultRout }: ILayoutProps) => {
   const userString = localStorage.getItem("user");
   const user = userString ? JSON.parse(userString) : null;
+  const [chargeAmount, setChargeAmount] = useState<number | "">("");
+  const { balance, updateBalance } = useBalanceContext();
+  console.log("balance: ", balance);
 
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -48,6 +60,14 @@ const Layout = ({ navItems, defaultRout }: ILayoutProps) => {
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
+  };
+
+  const handleDialogOpen = () => {
+    setOpenDialog(true);
+  };
+
+  const handleDialogClose = () => {
+    setOpenDialog(false);
   };
 
   const drawer = (
@@ -61,7 +81,7 @@ const Layout = ({ navItems, defaultRout }: ILayoutProps) => {
                 else item.action?.();
 
                 if (mobileOpen) setMobileOpen(false);
-              }}  
+              }}
             >
               <ListItemIcon
                 sx={{
@@ -111,6 +131,12 @@ const Layout = ({ navItems, defaultRout }: ILayoutProps) => {
               {user.name.toUpperCase()}
             </Typography>
           </Box>
+          <Box sx={{ flexGrow: 1 }} />
+          {balance !== undefined && (
+            <Box onClick={handleDialogOpen} sx={{ cursor: "pointer" }}>
+              <Typography>{`${balance} JOD`}</Typography>
+            </Box>
+          )}
         </Toolbar>
       </AppBar>
       <Box component="nav" sx={{ width: { md: 240 }, flexShrink: { md: 0 } }}>
@@ -156,6 +182,44 @@ const Layout = ({ navItems, defaultRout }: ILayoutProps) => {
       >
         <Outlet />
       </Box>
+      <Dialog open={openDialog} onClose={handleDialogClose}>
+        <DialogTitle>Recharge Balance</DialogTitle>
+        <DialogContent>
+          <Typography sx={{ mb: 2 }}>
+            Enter the amount you want to recharge:
+          </Typography>
+          <TextField
+            label="Amount (JOD)"
+            type="number"
+            fullWidth
+            value={chargeAmount}
+            onChange={(e) => setChargeAmount(Number(e.target.value))}
+            inputProps={{ min: 1 }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose}>Cancel</Button>
+          <Button
+            onClick={async () => {
+              if (chargeAmount && chargeAmount > 0) {
+                if (updateBalance) {
+                  if (typeof balance === "number") {
+                    await updateBalance(chargeAmount + balance);
+                  }
+                }
+
+                // Reset & close dialog
+                setChargeAmount("");
+                handleDialogClose();
+              }
+            }}
+            variant="contained"
+            color="primary"
+          >
+            Recharge
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
