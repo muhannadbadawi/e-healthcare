@@ -47,7 +47,6 @@ const Layout = ({ navItems, defaultRout }: ILayoutProps) => {
   const user = userString ? JSON.parse(userString) : null;
   const [chargeAmount, setChargeAmount] = useState<number | "">("");
   const { balance, updateBalance } = useBalanceContext();
-  console.log("balance: ", balance);
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);

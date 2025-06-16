@@ -77,6 +77,7 @@ export const router = createBrowserRouter([
       { path: "home", element: <ClientHome /> },
       { path: "medical-specialties", element: <MedicalSpecialties /> },
       { path: "chat/:doctorId", element: <Chat /> },
+      { path: "history", element: <div>History</div> }, // Placeholder for History component
     ],
   },
   {

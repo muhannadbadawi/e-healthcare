@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { useSocketContext } from "../../../components/SocketContext";
 import { rateDoctor } from "../../../api/clientService";
+import { useNavigate } from "react-router-dom";
 
 const ChatTimer = ({ doctorId, role, roomName }: { doctorId: string, role: string, roomName: string }) => {
   const [seconds, setSeconds] = useState(0);
@@ -19,6 +20,7 @@ const ChatTimer = ({ doctorId, role, roomName }: { doctorId: string, role: strin
   const [rateDialogOpen, setRateDialogOpen] = useState(false);
   const [rating, setRating] = useState<number>(0);
   const { socket } = useSocketContext();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -46,7 +48,7 @@ const ChatTimer = ({ doctorId, role, roomName }: { doctorId: string, role: strin
   };
   const handleRateDialogClose = () => {
     setRateDialogOpen(false);
-    window.history.back();
+    navigate("/client/home")
   };
   const submitRating = async () => {
     await rateDoctor(doctorId as string, rating);
@@ -55,7 +57,7 @@ const ChatTimer = ({ doctorId, role, roomName }: { doctorId: string, role: strin
   const handleEndChat = () => {
     if (role === "doctor") {
       socket?.emit("setOnline");
-      window.history.back();
+      navigate("/doctor/home")
     } else {
       handleRateDialogOpen();
     }
