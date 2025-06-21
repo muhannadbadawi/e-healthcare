@@ -18,6 +18,7 @@ import Chat from "../screens/chat/chat";
 import { SocketProvider } from "../components/SocketContext";
 import DoctorSettings from "../screens/doctor-screens/doctor-settings/doctor-settings";
 import NotFound from "../screens/not-found/not-found";
+import DoctorHistory from "../screens/doctor-screens/doctor-history/doctor-history";
 
 export const router = createBrowserRouter([
   {
@@ -45,6 +46,7 @@ export const router = createBrowserRouter([
       { path: "doctors", element: <AdminDoctorsManagement /> },
       { path: "clients", element: <AdminClientManagement /> },
       { path: "settings", element: <AdminSettings /> },
+      { path: "history", element: <DoctorHistory /> },
     ],
   },
   {
@@ -61,6 +63,7 @@ export const router = createBrowserRouter([
       { path: "home", element: <DoctorHome /> },
       { path: "settings", element: <DoctorSettings /> },
       { path: "chat/:clientId", element: <Chat /> },
+      { path: "history", element: <DoctorHistory /> },
     ],
   },
   {
@@ -77,11 +80,11 @@ export const router = createBrowserRouter([
       { path: "home", element: <ClientHome /> },
       { path: "medical-specialties", element: <MedicalSpecialties /> },
       { path: "chat/:doctorId", element: <Chat /> },
-      { path: "history", element: <div>History</div> }, // Placeholder for History component
+      { path: "history", element: <DoctorHistory /> },
     ],
   },
   {
     path: "*",
-    element: <NotFound/>,
+    element: <NotFound />,
   },
 ]);

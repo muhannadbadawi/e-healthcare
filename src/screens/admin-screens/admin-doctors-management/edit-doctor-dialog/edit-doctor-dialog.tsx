@@ -18,25 +18,30 @@ import {
 } from "@mui/material";
 import { MedicalSpecialty } from "../../../../enums/medical-specialty-enum";
 import { ChangeEvent, useState } from "react";
-import { addDoctor } from "../../../../api/adminService";
+import { updateDoctor } from "../../../../api/adminService";
 import { registerDoctorData } from "../../../../models/register-doctor-data";
 import toast from "react-hot-toast";
 import MyButton from "../../../../components/my-button";
+import { Doctor } from "../../../../models/doctor";
 
-interface IAddDoctorDialogProps {
+interface IEditDoctorDialogProps {
   isOpen: boolean;
   onClose: (fromSubmit?: boolean) => void;
+  editingDoctor: Doctor;
 }
 
-const AddDoctorDialog = ({ isOpen, onClose }: IAddDoctorDialogProps) => {
-  // loading
+const EditDoctorDialog = ({
+  isOpen,
+  onClose,
+  editingDoctor,
+}: IEditDoctorDialogProps) => {
   const [formValues, setFormValues] = useState<Omit<registerDoctorData, "id">>({
-    name: "",
-    specialty: MedicalSpecialty.GeneralMedicine,
-    email: "",
-    age: "30",
-    gender: "Male",
-    address: "",
+    name: editingDoctor.name,
+    specialty: editingDoctor.specialty,
+    email: editingDoctor.email,
+    age: editingDoctor.age,
+    gender: editingDoctor.gender,
+    address: editingDoctor.address,
     password: "",
   });
 
@@ -59,14 +64,21 @@ const AddDoctorDialog = ({ isOpen, onClose }: IAddDoctorDialogProps) => {
   };
 
   const handleModalSubmit = async () => {
-    const isSuccess = await addDoctor(formValues);
-    if (isSuccess) {
-      toast.success("Doctor added successfully!");
-      onClose(true);
-    } else {
-      toast.error("Something went wrong. Please try again.");
+    if (
+      formValues.name &&
+      formValues.email &&
+      (formValues.password || editingDoctor)
+    ) {
+      const isSuccess = await updateDoctor(editingDoctor._id, formValues);
+      if (isSuccess) {
+        toast.success("Doctor updated successfully!");
+        onClose(true);
+      } else {
+        toast.error("Failed to update doctor.");
+      }
     }
   };
+
 
   return (
     <Dialog
@@ -95,7 +107,7 @@ const AddDoctorDialog = ({ isOpen, onClose }: IAddDoctorDialogProps) => {
           py: 2,
         }}
       >
-        Add a New Doctor
+        {`Edit ${editingDoctor.name} Doctor`}
       </DialogTitle>
 
       <DialogContent
@@ -118,6 +130,7 @@ const AddDoctorDialog = ({ isOpen, onClose }: IAddDoctorDialogProps) => {
               onChange={handleInputChange}
               fullWidth
               required
+              disabled={!!editingDoctor}
             />
             <TextField
               size="small"
@@ -212,11 +225,11 @@ const AddDoctorDialog = ({ isOpen, onClose }: IAddDoctorDialogProps) => {
           Cancel
         </MyButton>
         <MyButton onClick={handleModalSubmit} variant="contained" fullWidth>
-          Add Doctor
+          Edit Doctor
         </MyButton>
       </DialogActions>
     </Dialog>
   );
 };
 
-export default AddDoctorDialog;
+export default EditDoctorDialog;

@@ -69,7 +69,7 @@ export const getClients = async () => {
 
 export const resetClientPassword = async (id: string) => {
   try {
-    const response = await api.post(`/admin/resetClientPassword/${id}`, {});
+    const response = await api.post(`/admin/resetClientPassword`, {id});
     return isSuccess(response.status);
   } catch (error) {
     console.error(error);

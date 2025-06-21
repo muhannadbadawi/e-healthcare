@@ -1,14 +1,14 @@
 import { useCallback, useState } from 'react';
 
 export const useDialogHook = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState('');
 
-  const openDialog = useCallback(() => {
-    setIsOpen(true);
+  const openDialog = useCallback((dialogName: string) => {
+    setIsOpen(dialogName);
   }, []);
 
   const closeDialog = useCallback(() => {
-    setIsOpen(false);
+    setIsOpen('');
   }, []);
 
   return {

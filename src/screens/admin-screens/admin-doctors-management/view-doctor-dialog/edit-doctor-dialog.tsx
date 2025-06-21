@@ -18,25 +18,38 @@ import {
 } from "@mui/material";
 import { MedicalSpecialty } from "../../../../enums/medical-specialty-enum";
 import { ChangeEvent, useState } from "react";
-import { addDoctor } from "../../../../api/adminService";
+import { addDoctor, updateDoctor } from "../../../../api/adminService";
 import { registerDoctorData } from "../../../../models/register-doctor-data";
 import toast from "react-hot-toast";
 import MyButton from "../../../../components/my-button";
+import { useEffect } from "react";
+import { Doctor } from "../../../../models/doctor";
 
-interface IAddDoctorDialogProps {
+interface IEditDoctorDialogProps {
   isOpen: boolean;
   onClose: (fromSubmit?: boolean) => void;
+  editingDoctor: Doctor | null;
 }
 
-const AddDoctorDialog = ({ isOpen, onClose }: IAddDoctorDialogProps) => {
+const EditDoctorDialog = ({
+  isOpen,
+  onClose,
+  editingDoctor = null,
+}: IEditDoctorDialogProps) => {
   // loading
+  const submitText = editingDoctor ? "Edit Doctor" : "Add Doctor";
+  const dialogTitle = editingDoctor
+    ? `Edit ${editingDoctor.name} Doctor`
+    : "Add a New Doctor";
   const [formValues, setFormValues] = useState<Omit<registerDoctorData, "id">>({
-    name: "",
-    specialty: MedicalSpecialty.GeneralMedicine,
-    email: "",
-    age: "30",
-    gender: "Male",
-    address: "",
+    name: editingDoctor ? editingDoctor.name : "",
+    specialty: editingDoctor
+      ? editingDoctor.specialty
+      : MedicalSpecialty.GeneralMedicine,
+    email: editingDoctor ? editingDoctor.email : "",
+    age: editingDoctor ? editingDoctor.age : "30",
+    gender: editingDoctor ? editingDoctor.gender : "Male",
+    address: editingDoctor ? editingDoctor.address : "",
     password: "",
   });
 
@@ -59,14 +72,54 @@ const AddDoctorDialog = ({ isOpen, onClose }: IAddDoctorDialogProps) => {
   };
 
   const handleModalSubmit = async () => {
-    const isSuccess = await addDoctor(formValues);
-    if (isSuccess) {
-      toast.success("Doctor added successfully!");
-      onClose(true);
-    } else {
-      toast.error("Something went wrong. Please try again.");
+    if (
+      formValues.name &&
+      formValues.email &&
+      (formValues.password || editingDoctor)
+    ) {
+      if (editingDoctor) {
+        const isSuccess = await updateDoctor(editingDoctor._id, formValues);
+        if (isSuccess) {
+          toast.success("Doctor updated successfully!");
+          onClose(true);
+        } else {
+          toast.error("Failed to update doctor.");
+        }
+      } else {
+        const isSuccess = await addDoctor(formValues);
+        if (isSuccess) {
+          toast.success("Doctor added successfully!");
+          onClose(true);
+        } else {
+          toast.error("Something went wrong. Please try again.");
+        }
+      }
     }
   };
+
+  useEffect(() => {
+    if (editingDoctor) {
+      setFormValues({
+        name: editingDoctor.name,
+        specialty: editingDoctor.specialty,
+        email: editingDoctor.email,
+        age: editingDoctor.age,
+        gender: editingDoctor.gender,
+        address: editingDoctor.address,
+        password: "",
+      });
+    } else {
+      setFormValues({
+        name: "",
+        specialty: MedicalSpecialty.GeneralMedicine,
+        email: "",
+        age: "30",
+        gender: "Male",
+        address: "",
+        password: "",
+      });
+    }
+  }, [editingDoctor]);
 
   return (
     <Dialog
@@ -95,7 +148,7 @@ const AddDoctorDialog = ({ isOpen, onClose }: IAddDoctorDialogProps) => {
           py: 2,
         }}
       >
-        Add a New Doctor
+        {dialogTitle}
       </DialogTitle>
 
       <DialogContent
@@ -110,7 +163,7 @@ const AddDoctorDialog = ({ isOpen, onClose }: IAddDoctorDialogProps) => {
         <Box sx={{ px: 4, py: 3 }}>
           <Stack spacing={3}>
             <TextField
-              size="small"
+              size = "small"
               label="Email Address"
               name="email"
               type="email"
@@ -118,9 +171,10 @@ const AddDoctorDialog = ({ isOpen, onClose }: IAddDoctorDialogProps) => {
               onChange={handleInputChange}
               fullWidth
               required
+              disabled={!!editingDoctor}
             />
             <TextField
-              size="small"
+              size = "small"
               label="Full Name"
               name="name"
               value={formValues.name}
@@ -129,7 +183,7 @@ const AddDoctorDialog = ({ isOpen, onClose }: IAddDoctorDialogProps) => {
               required
             />
             <TextField
-              size="small"
+              size = "small"
               label="Password"
               name="password"
               type="password"
@@ -157,7 +211,7 @@ const AddDoctorDialog = ({ isOpen, onClose }: IAddDoctorDialogProps) => {
                 </Select>
               </FormControl>
               <TextField
-                size="small"
+                size = "small"
                 label="Address"
                 name="address"
                 value={formValues.address}
@@ -202,21 +256,15 @@ const AddDoctorDialog = ({ isOpen, onClose }: IAddDoctorDialogProps) => {
       </DialogContent>
 
       <DialogActions sx={{ px: 4, pb: 3, pt: 2, background: "#f3e5f5" }}>
-        <MyButton
-          onClick={() => {
-            onClose(false);
-          }}
-          variant="outlined"
-          sx={{ minWidth: 120 }}
-        >
+        <MyButton onClick={()=> {onClose(false)}} variant="outlined" sx={{ minWidth: 120 }}>
           Cancel
         </MyButton>
         <MyButton onClick={handleModalSubmit} variant="contained" fullWidth>
-          Add Doctor
+          {submitText}
         </MyButton>
       </DialogActions>
     </Dialog>
   );
 };
 
-export default AddDoctorDialog;
+export default EditDoctorDialog;

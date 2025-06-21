@@ -12,6 +12,7 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  Chip,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDialogHook } from "../../../hooks/use-dialog";
@@ -25,13 +26,15 @@ import MyButton from "../../../components/my-button";
 import ConfirmDialog from "../../../components/confirm-dialog";
 import { Doctor } from "../../../models/doctor";
 import TableSkeleton from "../table-skeleton/table-skeleton";
+import { NewReleases } from "@mui/icons-material";
+import EditDoctorDialog from "./edit-doctor-dialog/edit-doctor-dialog";
 
 const AdminDoctorsManagement: React.FC = () => {
   const { isOpen, openDialog, closeDialog } = useDialogHook();
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
-  const [editingDoctor, setEditingDoctor] = useState<Doctor | null>(null);
+  const [targetDoctor, setTargetDoctor] = useState<Doctor | null>(null);
   const [loading, setLoading] = useState(true);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [doctorToDelete, setDoctorToDelete] = useState<Doctor | null>(null);
@@ -63,12 +66,17 @@ const AdminDoctorsManagement: React.FC = () => {
   }, []);
 
   const handleAdd = () => {
-    openDialog();
+    openDialog("addDoctor");
   };
 
   const handleEdit = (doctor: Doctor) => {
-    setEditingDoctor(doctor);
-    openDialog();
+    setTargetDoctor(doctor);
+    openDialog("editDoctor");
+  };
+
+  const handleView = (doctor: Doctor) => {
+    setTargetDoctor(doctor);
+    openDialog("addDoctor");
   };
 
   const handleDelete = (doctor: Doctor) => {
@@ -90,10 +98,10 @@ const AdminDoctorsManagement: React.FC = () => {
 
   const onCloseDialog = (fromSubmit = false) => {
     closeDialog();
-    if(fromSubmit){
+    if (fromSubmit) {
       fetchDoctors(); // Refetch the doctors after editing
     }
-    if (editingDoctor) setEditingDoctor(null);
+    if (targetDoctor) setTargetDoctor(null);
   };
 
   return (
@@ -118,16 +126,16 @@ const AdminDoctorsManagement: React.FC = () => {
           <Table stickyHeader>
             <TableHead>
               <TableRow>
-                <TableCell>
+                <TableCell align="center">
                   <strong>Name</strong>
                 </TableCell>
-                <TableCell>
+                <TableCell align="center">
                   <strong>Specialty</strong>
                 </TableCell>
-                <TableCell>
+                <TableCell align="center">
                   <strong>Email</strong>
                 </TableCell>
-                <TableCell>
+                <TableCell align="center">
                   <strong>Rating</strong>
                 </TableCell>
               </TableRow>
@@ -135,15 +143,37 @@ const AdminDoctorsManagement: React.FC = () => {
             <TableBody>
               {doctors.map((doctor) => (
                 <TableRow key={doctor._id} hover>
-                  <TableCell>{doctor.name}</TableCell>
-                  <TableCell>{doctor.specialty}</TableCell>
-                  <TableCell>{doctor.email}</TableCell>
-                  <TableCell>
-                    <Rating
-                      value={Number(doctor.rate) || 0}
-                      precision={0.5}
-                      readOnly
-                    />
+                  <TableCell align="center">{doctor.name}</TableCell>
+                  <TableCell align="center">{doctor.specialty}</TableCell>
+                  <TableCell align="center">{doctor.email}</TableCell>
+                  <TableCell align="center">
+                    {doctor.rate > 0 ? (
+                      <Rating
+                        value={Number(doctor.rate) || 0}
+                        precision={0.5}
+                        readOnly
+                      />
+                    ) : (
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        mt={0.3}
+                        noWrap
+                      >
+                        <Chip
+                          label={"New"}
+                          color={"success"}
+                          icon={<NewReleases />}
+                          size="small"
+                          sx={{
+                            fontWeight: "bold",
+                            fontSize: "0.7rem",
+                            height: 22,
+                            borderRadius: 1,
+                          }}
+                        />
+                      </Typography>
+                    )}
                   </TableCell>
                   <TableCell align="center">
                     <IconButton
@@ -168,7 +198,7 @@ const AdminDoctorsManagement: React.FC = () => {
                   >
                     <MenuItem
                       onClick={() => {
-                        handleEdit(selectedDoctor!);
+                        handleView(selectedDoctor!);
                         handleMenuClose();
                       }}
                     >
@@ -206,10 +236,17 @@ const AdminDoctorsManagement: React.FC = () => {
       </TableContainer>
 
       <AddDoctorDialog
-        isOpen={isOpen}
+        isOpen={isOpen === "addDoctor"}
         onClose={onCloseDialog}
-        editingDoctor={editingDoctor}
       />
+      {targetDoctor && (
+        <EditDoctorDialog
+          isOpen={isOpen === "editDoctor"}
+          onClose={onCloseDialog}
+          editingDoctor={targetDoctor}
+        />
+      )}
+
       <ConfirmDialog
         open={openConfirmDialog}
         onClose={handleCancelDelete}

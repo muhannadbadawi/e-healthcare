@@ -4,6 +4,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
+import ChatIcon from "@mui/icons-material/Chat";
 import { logout } from "../../api/authService";
 import Layout from "../../components/layout";
 
@@ -16,12 +17,13 @@ const AdminLayout = () => {
     { text: "Dashboard", path: "/admin/home", icon: <DashboardIcon /> },
     { text: "Clients", path: "/admin/clients", icon: <PeopleIcon /> },
     { text: "Doctors", path: "/admin/doctors", icon: <LocalHospitalIcon /> },
+    { text: "Chats History", path: "/admin/history", icon: <ChatIcon /> },
     { text: "Settings", path: "/admin/settings", icon: <SettingsIcon /> },
     { text: "Logout", action: handleLogout, icon: <LogoutIcon /> },
   ];
 
   return (
-    <Box sx={{flex:1, display: "flex" }}>
+    <Box sx={{ flex: 1, display: "flex" }}>
       <Layout defaultRout="/admin/home" navItems={navItems} />
     </Box>
   );

@@ -11,6 +11,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
 import PersonIcon from "@mui/icons-material/Person";
+import ChatIcon from "@mui/icons-material/Chat";
 import { getCounts } from "../../../api/adminService";
 
 const AdminDashboard = () => {
@@ -20,6 +21,7 @@ const AdminDashboard = () => {
     activeAdmin: 0,
     activeDoctors: 0,
     activeClients: 0,
+    chats: 0,
   });
   const fetchCounts = async () => {
     const counts = (await getCounts()) as {
@@ -27,6 +29,7 @@ const AdminDashboard = () => {
       clientsCount: number;
       usersCount: number;
       doctorsCount: number;
+      chatsCount: number;
     };
 
     setDashboardData({
@@ -34,6 +37,7 @@ const AdminDashboard = () => {
       activeDoctors: counts.doctorsCount,
       activeAdmin: counts.adminsCount,
       activeClients: counts.clientsCount,
+      chats: counts.chatsCount,
     });
   };
 
@@ -104,6 +108,19 @@ const AdminDashboard = () => {
           />
           <CardContent sx={{ display: "flex", justifyContent: "center" }}>
             <Typography>{dashboardData.activeClients} Clients</Typography>
+          </CardContent>
+        </Card>
+        <Card sx={{ width: 170 }}>
+          <CardHeader
+            title="Total Chats"
+            avatar={<ChatIcon />}
+            sx={{
+              background: "linear-gradient(to left, #7b1fa2, #512da8)",
+              color: "#fff",
+            }}
+          />
+          <CardContent sx={{ display: "flex", justifyContent: "center" }}>
+            <Typography>{dashboardData.chats} Total Chats</Typography>
           </CardContent>
         </Card>
       </Grid>
