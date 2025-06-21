@@ -28,6 +28,7 @@ import { Doctor } from "../../../models/doctor";
 import TableSkeleton from "../table-skeleton/table-skeleton";
 import { NewReleases } from "@mui/icons-material";
 import EditDoctorDialog from "./edit-doctor-dialog/edit-doctor-dialog";
+import ViewDoctorDialog from "./view-doctor-dialog/view-doctor-dialog";
 
 const AdminDoctorsManagement: React.FC = () => {
   const { isOpen, openDialog, closeDialog } = useDialogHook();
@@ -76,7 +77,7 @@ const AdminDoctorsManagement: React.FC = () => {
 
   const handleView = (doctor: Doctor) => {
     setTargetDoctor(doctor);
-    openDialog("addDoctor");
+    openDialog("viewDoctor");
   };
 
   const handleDelete = (doctor: Doctor) => {
@@ -246,7 +247,13 @@ const AdminDoctorsManagement: React.FC = () => {
           editingDoctor={targetDoctor}
         />
       )}
-
+      {targetDoctor && (
+        <ViewDoctorDialog
+          isOpen={isOpen === "viewDoctor"}
+          onClose={onCloseDialog}
+          editingDoctor={targetDoctor}
+        />
+      )}
       <ConfirmDialog
         open={openConfirmDialog}
         onClose={handleCancelDelete}

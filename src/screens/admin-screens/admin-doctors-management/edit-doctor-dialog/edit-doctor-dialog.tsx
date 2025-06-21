@@ -79,7 +79,6 @@ const EditDoctorDialog = ({
     }
   };
 
-
   return (
     <Dialog
       open={isOpen}
@@ -130,7 +129,7 @@ const EditDoctorDialog = ({
               onChange={handleInputChange}
               fullWidth
               required
-              disabled={!!editingDoctor}
+              disabled={true}
             />
             <TextField
               size="small"
