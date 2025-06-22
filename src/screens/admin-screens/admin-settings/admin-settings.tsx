@@ -55,7 +55,7 @@ const AdminSettings = () => {
       localStorage.setItem("user", JSON.stringify(updatedUser));
       setConfirmPassword("");
       setPassword("");
-      setName(user.name);
+      setName(updatedUser.name);
       toast.success("Profile updated successfully!", {
         position: "bottom-left",
       });
