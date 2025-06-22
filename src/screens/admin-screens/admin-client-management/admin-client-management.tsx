@@ -13,7 +13,11 @@ import {
   MenuItem,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { deleteClient, getClients, resetClientPassword } from "../../../api/adminService";
+import {
+  deleteClient,
+  getClients,
+  resetClientPassword,
+} from "../../../api/adminService";
 import ListIcon from "@mui/icons-material/List";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import LockResetIcon from "@mui/icons-material/LockReset";
@@ -21,13 +25,15 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ConfirmDialog from "../../../components/confirm-dialog";
 import TableSkeleton from "../table-skeleton/table-skeleton";
 import toast from "react-hot-toast";
+import { useDialogHook } from "../../../hooks/use-dialog";
+import ViewClientDialog from "./view-client-dialog/view-client-dialog";
 
 export interface Client {
   _id: string;
   name: string;
   email: string;
   age: number;
-  gender: "Male" | "Female";
+  gender: "male" | "female";
   address: string;
   height: string;
   weight: string;
@@ -42,6 +48,8 @@ const AdminClientManagement: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [clientToDelete, setClientToDelete] = useState<Client | null>(null);
+  const [targetClient, setTargetClient] = useState<Client | null>(null);
+  const { isOpen, openDialog, closeDialog } = useDialogHook();
 
   const open = Boolean(anchorEl);
 
@@ -69,21 +77,33 @@ const AdminClientManagement: React.FC = () => {
     fetchClients();
   }, []);
 
+  const handleView = (client: Client) => {
+    setTargetClient(client);
+    openDialog("viewClient");
+  };
+
+  const onCloseView = () => {
+    setTargetClient(null)
+    closeDialog()
+  }
+
   const handleDelete = (client: Client) => {
     setClientToDelete(client); // Set the client to delete
     setOpenConfirmDialog(true); // Open the confirmation dialog
   };
 
   const resetPassword = async (client: Client) => {
-    const reset = await resetClientPassword(client.userId)
+    const reset = await resetClientPassword(client.userId);
     if (reset) {
       toast.success(`Password reset successfully to ${client.name}.`, {
-        duration: 2000, position: "bottom-left",
-    });
+        duration: 2000,
+        position: "bottom-left",
+      });
     } else {
       toast.error("Failed to reset password.", {
-        duration: 2000, position: "bottom-left",
-    });
+        duration: 2000,
+        position: "bottom-left",
+      });
     }
   };
 
@@ -164,6 +184,7 @@ const AdminClientManagement: React.FC = () => {
                   >
                     <MenuItem
                       onClick={() => {
+                        handleView(selectedClient!);
                         handleMenuClose();
                       }}
                     >
@@ -209,6 +230,13 @@ const AdminClientManagement: React.FC = () => {
         confirmText="Confirm Delete"
         confirmButtonColor="error"
       />
+      {targetClient && (
+        <ViewClientDialog
+          client={targetClient}
+          isOpen={isOpen === "viewClient"}
+          onClose={onCloseView}
+        />
+      )}
     </Box>
   );
 };
