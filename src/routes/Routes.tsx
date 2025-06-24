@@ -19,6 +19,7 @@ import { SocketProvider } from "../components/SocketContext";
 import DoctorSettings from "../screens/doctor-screens/doctor-settings/doctor-settings";
 import NotFound from "../screens/not-found/not-found";
 import DoctorHistory from "../screens/doctor-screens/doctor-history/doctor-history";
+import Settings from "../screens/client-screens/settings/settings";
 
 export const router = createBrowserRouter([
   {
@@ -81,6 +82,7 @@ export const router = createBrowserRouter([
       { path: "medical-specialties", element: <MedicalSpecialties /> },
       { path: "chat/:doctorId", element: <Chat /> },
       { path: "history", element: <DoctorHistory /> },
+      { path: "settings", element: <Settings /> },
     ],
   },
   {
