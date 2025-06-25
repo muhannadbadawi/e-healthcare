@@ -16,6 +16,8 @@ export const updateClient = async (
   updatedClient: registerClientData
 ): Promise<registerClientData> => {
   try {
+    console.log("updatedClient: ", updatedClient);
+
     const response = await api.put(
       `/client/updateClient/${getUserId()}`,
       updatedClient

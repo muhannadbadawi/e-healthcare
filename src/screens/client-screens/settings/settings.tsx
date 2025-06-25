@@ -4,15 +4,21 @@ import {
   Typography,
   CircularProgress,
   Button,
+  Dialog,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { getCurrentClient, updateClient } from "../../../api/clientService";
 import { registerClientData } from "../../../models/register-client-data";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const Settings = () => {
   const [client, setClient] = useState<registerClientData | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [saving, setSaving] = useState<boolean>(false);
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const storedUser = localStorage.getItem("user");
   const user = storedUser ? JSON.parse(storedUser) : null;
@@ -37,18 +43,32 @@ const Settings = () => {
     setClient({ ...client, [e.target.name]: e.target.value });
   };
 
-  const handleSave = async () => {
-    if (!client || !user?.id) return;
+  const handlePasswordConfirm = async () => {
+    if (!client || !user?.id || !password) return;
+
     setSaving(true);
     try {
-      await updateClient(client);
-      alert("Profile updated successfully");
+      localStorage.setItem(
+        "user",
+        JSON.stringify({ ...user, name: client.name })
+      );
+
+      await updateClient({ ...client, password }); // Send password along with update
+      toast.success("Profile updated successfully");
+      setPasswordDialogOpen(false);
+      setPassword(""); // Clear password input
+      navigate("/client/home");
     } catch (error) {
       console.error("Error updating client:", error);
-      alert("Failed to update profile");
+      toast.error("Failed to update profile");
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleSave = async () => {
+    if (!client || !user?.id) return;
+    setPasswordDialogOpen(true);
   };
 
   if (loading) {
@@ -222,6 +242,33 @@ const Settings = () => {
       >
         {saving ? "Saving..." : "Save Changes"}
       </Button>
+      <Dialog
+        open={passwordDialogOpen}
+        onClose={() => setPasswordDialogOpen(false)}
+      >
+        <Box p={2}>
+          <Typography variant="h6">Confirm Your Password</Typography>
+          <TextField
+            fullWidth
+            margin="normal"
+            type="password"
+            label="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <Box display="flex" justifyContent="flex-end" gap={1} mt={2}>
+            <Button onClick={() => setPasswordDialogOpen(false)}>Cancel</Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handlePasswordConfirm}
+              disabled={saving || !password}
+            >
+              {saving ? "Saving..." : "Confirm"}
+            </Button>
+          </Box>
+        </Box>
+      </Dialog>
     </Box>
   );
 };
