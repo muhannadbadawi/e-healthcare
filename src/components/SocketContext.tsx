@@ -49,7 +49,6 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
     Record<string, DoctorStatus>
   >({});
 
-
   useEffect(() => {
     if (!user.id) return;
 
@@ -61,21 +60,25 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
 
     setSocket(socketClient);
 
-    // طلب الحصول على المستخدمين المتصلين
-    socketClient.emit("getOnlineUsers");
+    socketClient.emit("getDoctorStatuses");
 
-    // الاستماع للرد
-    socketClient.on("onlineUsers", (onlineUserIds: string[]) => {
-      const statuses: Record<string, DoctorStatus> = {};
-      onlineUserIds.forEach((id) => {
-        statuses[id] = "online";
-      });
-      setDoctorStatuses((prev) => ({
-        ...prev,
-        ...statuses,
-      }));
-      console.log("👥 Online users received:", onlineUserIds);
-    });
+    socketClient.on(
+      "allDoctorStatuses",
+      (
+        doctors: {
+          doctorId: string;
+          name: string;
+          specialty: string;
+          status: DoctorStatus;
+        }[]
+      ) => {
+        const statusMap: Record<string, DoctorStatus> = {};
+        for (const doc of doctors) {
+          statusMap[doc.doctorId] = doc.status;
+        }
+        setDoctorStatuses(statusMap);
+      }
+    );
 
     console.log("✅ Socket connected");
 

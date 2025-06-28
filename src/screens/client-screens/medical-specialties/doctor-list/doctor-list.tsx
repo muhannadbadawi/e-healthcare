@@ -85,8 +85,7 @@ const DoctorsList = ({ doctorList }: IDoctorsListProps) => {
     <>
       <Box p={2} display="grid" gap={2}>
         {activeDoctors.map((doctor) => {
-          const status: DoctorStatus =
-            doctorStatuses[doctor.userId] || "offline";
+          const status: DoctorStatus = doctorStatuses[doctor.userId];
 
           return (
             doctor.sessionPrice > 0 && (
