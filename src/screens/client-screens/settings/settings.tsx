@@ -5,6 +5,9 @@ import {
   CircularProgress,
   Button,
   Dialog,
+  Card,
+  Grid,
+  CardContent
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { getCurrentClient, updateClient } from "../../../api/clientService";
@@ -52,11 +55,10 @@ const Settings = () => {
         "user",
         JSON.stringify({ ...user, name: client.name })
       );
-
-      await updateClient({ ...client, password }); // Send password along with update
+      await updateClient({ ...client, password });
       toast.success("Profile updated successfully");
       setPasswordDialogOpen(false);
-      setPassword(""); // Clear password input
+      setPassword("");
       navigate("/client/home");
     } catch (error) {
       console.error("Error updating client:", error);
@@ -66,7 +68,7 @@ const Settings = () => {
     }
   };
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!client || !user?.id) return;
     setPasswordDialogOpen(true);
   };
@@ -88,166 +90,168 @@ const Settings = () => {
   }
 
   return (
-    <Box p={3} maxWidth={600} mx="auto">
-      <Typography variant="h4" gutterBottom>
-        Update Your Information
+    <Box p={3} maxWidth={1000} mx="auto">
+      <Typography variant="h4" gutterBottom textAlign="center">
+        Client Settings
       </Typography>
 
-      {/* Personal Info Fields */}
-      <Box mb={2}>
-        <TextField
-          label="Name"
-          name="name"
-          value={client.name}
-          onChange={handleChange}
-          fullWidth
-        />
-      </Box>
+      <Grid container spacing={3}>
 
-      <Box mb={2}>
-        <TextField
-          label="Email"
-          name="email"
-          value={client.email}
-          onChange={handleChange}
-          fullWidth
-          disabled
-        />
-      </Box>
+        {/* Personal Info */}
+        <Grid item xs={12} md={4} minWidth={1000}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Personal Information
+              </Typography>
+              <TextField
+                label="Name"
+                name="name"
+                value={client.name}
+                onChange={handleChange}
+                fullWidth
+                margin="normal"
+              />
+              <TextField
+                label="Age"
+                name="age"
+                type="number"
+                value={client.age}
+                onChange={handleChange}
+                fullWidth
+                margin="normal"
+              />
+              <TextField
+                label="Gender"
+                name="gender"
+                value={client.gender}
+                onChange={handleChange}
+                fullWidth
+                margin="normal"
+              />
+              <TextField
+                label="Address"
+                name="address"
+                value={client.address}
+                onChange={handleChange}
+                fullWidth
+                margin="normal"
+              />
+            </CardContent>
+          </Card>
+        </Grid>
 
-      <Box mb={2}>
-        <TextField
-          label="Age"
-          name="age"
-          type="number"
-          value={client.age}
-          onChange={handleChange}
-          fullWidth
-        />
-      </Box>
+        {/* Payment Info */}
+        <Grid item xs={12} md={4} minWidth={1000}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Payment Information
+              </Typography>
+              <TextField
+                label="Card Name"
+                name="cardName"
+                value={client.cardName}
+                onChange={handleChange}
+                fullWidth
+                margin="normal"
+              />
+              <TextField
+                label="Card Number"
+                name="cardNumber"
+                value={client.cardNumber}
+                onChange={handleChange}
+                fullWidth
+                margin="normal"
+              />
+              <TextField
+                label="Expiry Date"
+                name="expiryDate"
+                placeholder="MM/YY"
+                inputProps={{ maxLength: 5 }}
+                fullWidth
+                margin="normal"
+                value={client.expiryDate}
+                onChange={(e) => {
+                  const raw = e.target.value.replace(/\D/g, "").slice(0, 4);
+                  const formatted =
+                    raw.length > 2 ? `${raw.slice(0, 2)}/${raw.slice(2)}` : raw;
+                  setClient({ ...client, expiryDate: formatted });
+                }}
+              />
+              <TextField
+                label="CVV"
+                name="cvv"
+                type="password"
+                value={client.cvv}
+                onChange={handleChange}
+                fullWidth
+                margin="normal"
+              />
+            </CardContent>
+          </Card>
+        </Grid>
 
-      <Box mb={2}>
-        <TextField
-          label="Gender"
-          name="gender"
-          value={client.gender}
-          onChange={handleChange}
-          fullWidth
-        />
-      </Box>
+        {/* Health Info */}
+        <Grid item xs={12} md={4} minWidth={1000}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Health Information
+              </Typography>
+              <TextField
+                label="Height (cm)"
+                name="height"
+                value={client.height}
+                onChange={handleChange}
+                fullWidth
+                margin="normal"
+              />
+              <TextField
+                label="Weight (kg)"
+                name="weight"
+                value={client.weight}
+                onChange={handleChange}
+                fullWidth
+                margin="normal"
+              />
+              <TextField
+                label="Allergies"
+                name="allergies"
+                value={client.allergies}
+                onChange={handleChange}
+                fullWidth
+                margin="normal"
+              />
+            </CardContent>
+          </Card>
+        </Grid>
 
-      <Box mb={2}>
-        <TextField
-          label="Address"
-          name="address"
-          value={client.address}
-          onChange={handleChange}
-          fullWidth
-        />
-      </Box>
 
-      <Box mb={2}>
-        <TextField
-          label="Height (cm)"
-          name="height"
-          value={client.height}
-          onChange={handleChange}
-          fullWidth
-        />
-      </Box>
-
-      <Box mb={2}>
-        <TextField
-          label="Weight (kg)"
-          name="weight"
-          value={client.weight}
-          onChange={handleChange}
-          fullWidth
-        />
-      </Box>
-
-      <Box mb={3}>
-        <TextField
-          label="Allergies"
-          name="allergies"
-          value={client.allergies}
-          onChange={handleChange}
-          fullWidth
-        />
-      </Box>
-
-      {/* Credit Card Fields */}
-      <Typography variant="h6" gutterBottom>
-        Payment Information
-      </Typography>
-
-      <Box mb={2}>
-        <TextField
-          label="Card Name"
-          name="cardName"
-          value={client.cardName}
-          onChange={handleChange}
-          fullWidth
-        />
-      </Box>
-
-      <Box mb={2}>
-        <TextField
-          label="Card Number"
-          name="cardNumber"
-          value={client.cardNumber}
-          onChange={handleChange}
-          fullWidth
-        />
-      </Box>
-
-      <Box mb={2}>
-        <TextField
-          label="Expiry Date"
-          name="expiryDate"
-          placeholder="MM/YY"
-          inputProps={{ maxLength: 5 }}
-          fullWidth
-          value={client.expiryDate}
-          onChange={(e) => {
-            const raw = e.target.value.replace(/\D/g, "").slice(0, 4); // only digits, max 4
-            const formatted =
-              raw.length > 2 ? `${raw.slice(0, 2)}/${raw.slice(2)}` : raw;
-
-            setClient({
-              ...client,
-              expiryDate: formatted,
-            });
-          }}
-        />
-      </Box>
-
-      <Box mb={3}>
-        <TextField
-          label="CVV"
-          name="cvv"
-          type="password"
-          value={client.cvv}
-          onChange={handleChange}
-          fullWidth
-        />
-      </Box>
+      </Grid>
 
       {/* Save Button */}
-      <Button
-        variant="contained"
-        onClick={handleSave}
-        disabled={saving}
-        fullWidth
-      >
-        {saving ? "Saving..." : "Save Changes"}
-      </Button>
+      <Box mt={4}>
+        <Button
+          variant="contained"
+          onClick={handleSave}
+          disabled={saving}
+          sx={{minWidth: 1000}}
+          fullWidth
+        >
+          {saving ? "Saving..." : "Save Changes"}
+        </Button>
+      </Box>
+
+      {/* Password Dialog */}
       <Dialog
         open={passwordDialogOpen}
         onClose={() => setPasswordDialogOpen(false)}
       >
-        <Box p={2}>
-          <Typography variant="h6">Confirm Your Password</Typography>
+        <Box p={3} minWidth={300}>
+          <Typography variant="h6" gutterBottom>
+            Confirm Your Password
+          </Typography>
           <TextField
             fullWidth
             margin="normal"
@@ -260,7 +264,6 @@ const Settings = () => {
             <Button onClick={() => setPasswordDialogOpen(false)}>Cancel</Button>
             <Button
               variant="contained"
-              color="primary"
               onClick={handlePasswordConfirm}
               disabled={saving || !password}
             >

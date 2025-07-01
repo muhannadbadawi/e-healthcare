@@ -16,19 +16,24 @@ import {
   FormControlLabel,
   Radio,
 } from "@mui/material";
-import { getDoctorInfo, saveSessionPrice } from "../../../api/doctorService";
+import {
+  getDoctorInfo,
+  updateDoctor,
+  //  saveSessionPrice
+} from "../../../api/doctorService";
 import { MedicalSpecialty } from "../../../enums/medical-specialty-enum";
 
 const DoctorSettings = () => {
-  const [sessionPrice, setSessionPrice] = useState<number | "">("");
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [formValues, setFormValues] = useState({
+    id: "",
     email: "",
     name: "",
     specialty: "",
     address: "",
+    sessionPrice: "",
     age: "",
     gender: "",
   });
@@ -37,13 +42,14 @@ const DoctorSettings = () => {
     setLoading(true);
     try {
       const currentDoctor = await getDoctorInfo();
-      setSessionPrice(currentDoctor.sessionPrice || "");
       setFormValues({
+        id: currentDoctor._id,
         email: currentDoctor.email,
         name: currentDoctor.name,
         specialty: currentDoctor.specialty,
         address: currentDoctor.address,
         age: currentDoctor.age,
+        sessionPrice: currentDoctor.sessionPrice.toString(),
         gender: currentDoctor.gender,
       });
     } catch {
@@ -58,7 +64,16 @@ const DoctorSettings = () => {
     setSuccessMsg("");
     setErrorMsg("");
     try {
-      await saveSessionPrice(Number(sessionPrice));
+      // await saveSessionPrice(Number(sessionPrice));
+      const { id, specialty, ...rest } = formValues;
+      const dataToUpdate = {
+        ...rest,
+        sessionPrice: Number(formValues.sessionPrice),
+        specialty: specialty as MedicalSpecialty,
+      };
+      console.log("dataToUpdate: ", dataToUpdate);
+
+      await updateDoctor(id, dataToUpdate);
       setSuccessMsg("Session price updated successfully.");
     } catch {
       setErrorMsg("Failed to update session price.");
@@ -83,7 +98,7 @@ const DoctorSettings = () => {
   }, []);
 
   return (
-    <Paper elevation={3} sx={{ p: 4, maxWidth: 400, mx: "auto", mt: 4 }}>
+    <Paper elevation={3} sx={{ p: 4, maxWidth: 800, mx: "auto", mt: 4 }}>
       <Typography variant="h5" gutterBottom>
         Doctor Settings
       </Typography>
@@ -95,12 +110,13 @@ const DoctorSettings = () => {
 
       <Box mt={2}>
         <TextField
+          size="small"
           label="Session Price ($)"
-          type="number"
+          name="sessionPrice"
+          value={formValues.sessionPrice}
+          onChange={handleInputChange}
           fullWidth
-          value={sessionPrice}
-          onChange={(e) => setSessionPrice(Number(e.target.value))}
-          inputProps={{ min: 1 }}
+          required
         />
       </Box>
       <Box mt={2}>
@@ -194,7 +210,7 @@ const DoctorSettings = () => {
           variant="contained"
           color="primary"
           onClick={handleSave}
-          disabled={loading || sessionPrice === ""}
+          disabled={loading}
           fullWidth
         >
           Save

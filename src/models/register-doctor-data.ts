@@ -8,4 +8,5 @@ export interface registerDoctorData {
   gender: string;
   address: string;
   specialty: MedicalSpecialty;
+  sessionPrice? : number
 }

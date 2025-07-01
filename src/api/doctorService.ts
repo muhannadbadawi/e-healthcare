@@ -1,4 +1,5 @@
 import { Doctor } from "../models/doctor";
+import { registerDoctorData } from "../models/register-doctor-data";
 import api from "./axios";
 const userString = localStorage.getItem("user");
 const user = userString ? JSON.parse(userString) : null;
@@ -22,6 +23,19 @@ export const getDoctorInfo = async (): Promise<Doctor> => {
   } catch (error) {
     console.error("Failed to fetch doctor info:", error);
     throw error;
+  }
+};
+
+export const updateDoctor = async (
+  id: string,
+  data: Partial<registerDoctorData>
+) => {
+  try {
+    const response = await api.put(`/doctor/editDoctor/${id}`, data);
+    return response.status === 200;
+  } catch (error) {
+    console.error(error);
+    return false;
   }
 };
 

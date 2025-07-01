@@ -26,7 +26,6 @@ export const login = async (
       email,
       password,
     });
-
     if (response.status !== 201) {
       throw new Error("Login failed");
     }
@@ -50,7 +49,9 @@ export const login = async (
     return { ...decodedToken };
   } catch (error) {
     console.error("Login error:", error);
-    toast.error("Invalid email or password. Please try again.",{position:"bottom-left"});
+    toast.error("Invalid email or password. Please try again.", {
+      position: "bottom-left",
+    });
     throw new Error("Login failed");
   }
 };
@@ -66,7 +67,6 @@ export const register = async (userData: registerClientData) => {
 };
 
 export const logout = () => {
-
   window.location.href = "/login";
   localStorage.removeItem("token");
   localStorage.removeItem("user");

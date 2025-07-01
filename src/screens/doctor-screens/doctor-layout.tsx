@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSocketContext } from "../../components/SocketContext";
 import { getSessionPrice } from "../../api/doctorService";
+// import bgImage from "../../../../../bg10.jpg";
 
 const DoctorLayout = () => {
   const { socket } = useSocketContext();
@@ -29,12 +30,11 @@ const DoctorLayout = () => {
   const user = userString ? JSON.parse(userString) : null;
   const [showSessionPriceDialog, setShowSessionPriceDialog] = useState(false);
   const checkSessionPrice = async () => {
-
     if (!user.id) return;
     if (user.role !== "doctor") return;
     try {
       const sessionPrice = await getSessionPrice();
-      if (sessionPrice  === 0) {
+      if (sessionPrice === 0) {
         setShowSessionPriceDialog(true);
       }
     } catch (error) {
@@ -92,7 +92,15 @@ const DoctorLayout = () => {
   ];
 
   return (
-    <Box sx={{ flex: 1, display: "flex" }}>
+    <Box
+      sx={{
+        flex: 1,
+        display: "flex",
+        // backgroundImage: `url(${bgImage})`,
+        // backgroundSize: "contain",
+        // backgroundRepeat: "no-repeat",
+      }}
+    >
       <Layout defaultRout="/doctor/home" navItems={navItems} />
       <Dialog
         open={showSessionPriceDialog}
